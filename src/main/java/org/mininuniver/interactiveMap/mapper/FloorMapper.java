@@ -20,9 +20,9 @@
 package org.mininuniver.interactiveMap.mapper;
 
 import org.mapstruct.Mapper;
-import org.mininuniver.interactiveMap.api.dto.map.floor.FloorDTO;
-import org.mininuniver.interactiveMap.api.dto.map.floor.FloorShortDTO;
-import org.mininuniver.interactiveMap.domain.model.Floor;
+import org.mininuniver.interactiveMap.dto.map.FloorDTO;
+import org.mininuniver.interactiveMap.dto.map.FloorShortDTO;
+import org.mininuniver.interactiveMap.model.Floor;
 
 import java.util.List;
 

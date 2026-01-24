@@ -21,8 +21,8 @@ package org.mininuniver.interactiveMap.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mininuniver.interactiveMap.api.dto.map.stairs.StairsDTO;
-import org.mininuniver.interactiveMap.domain.model.Stairs;
+import org.mininuniver.interactiveMap.dto.map.StairsDTO;
+import org.mininuniver.interactiveMap.model.Stairs;
 
 import java.util.List;
 

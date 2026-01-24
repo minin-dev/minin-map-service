@@ -17,25 +17,23 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.mininuniver.interactiveMap.mapper;
+package org.mininuniver.interactiveMap.dto.auth;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mininuniver.interactiveMap.dto.map.RoomDTO;
-import org.mininuniver.interactiveMap.model.Room;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.util.List;
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+public class Request {
+    @NotNull(message = "Имя пользователя не может быть пустым")
+    private String username;
 
-@Mapper(componentModel = "spring")
-public interface RoomMapper {
-    @Mapping(source = "floor.id", target = "floorId")
-    @Mapping(source = "node.id", target = "nodeId")
-    RoomDTO toDto(Room entity);
-
-    @Mapping(target = "floor.id", source = "floorId")
-    @Mapping(target = "node.id", source = "nodeId")
-    Room toEntity(RoomDTO dto);
-
-    List<RoomDTO> toDtoList(List<Room> entities);
-    List<Room> toEntityList(List<RoomDTO> dtos);
+    @NotNull(message = "Пароль не может быть пустым")
+    private String password;
 }
+

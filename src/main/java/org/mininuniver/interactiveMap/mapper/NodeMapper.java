@@ -21,8 +21,8 @@ package org.mininuniver.interactiveMap.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mininuniver.interactiveMap.api.dto.map.node.NodeDTO;
-import org.mininuniver.interactiveMap.domain.model.Node;
+import org.mininuniver.interactiveMap.dto.map.NodeDTO;
+import org.mininuniver.interactiveMap.model.Node;
 
 import java.util.List;
 

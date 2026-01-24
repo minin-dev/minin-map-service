@@ -17,25 +17,31 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.mininuniver.interactiveMap.service;
+package org.mininuniver.interactiveMap.dto.map;
 
-import lombok.RequiredArgsConstructor;
-import org.mininuniver.interactiveMap.repository.NodeRepository;
-import org.mininuniver.interactiveMap.dto.map.NodeDTO;
-import org.mininuniver.interactiveMap.mapper.NodeMapper;
-import org.springframework.stereotype.Service;
-
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import java.util.List;
 
-@Service
-@RequiredArgsConstructor
-public class NodeService {
+@Getter
+@Setter
+@NoArgsConstructor
+public class RoomDTO {
+    private Long id;
 
-    private final NodeMapper nodeMapper;
-    private final NodeRepository nodeRepository;
+    @NotBlank(message = "Имя комнаты не может быть пустым")
+    private String name;
 
-    public List<NodeDTO> getAllNodes() {
-        return nodeMapper.toDtoList(nodeRepository.findAll());
-    }
+    @NotNull(message = "ID этажа обязателен")
+    private Long floorId;
 
+    private Long nodeId;
+
+    @NotNull(message = "Контур комнаты обязателен")
+    @Size(min = 3, message = "Контур комнаты должен содержать минимум 3 точки")
+    private List<PointDTO> points;
 }

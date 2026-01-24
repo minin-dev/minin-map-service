@@ -17,25 +17,30 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.mininuniver.interactiveMap.mapper;
+package org.mininuniver.interactiveMap.dto.map;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mininuniver.interactiveMap.dto.map.RoomDTO;
-import org.mininuniver.interactiveMap.model.Room;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
-public interface RoomMapper {
-    @Mapping(source = "floor.id", target = "floorId")
-    @Mapping(source = "node.id", target = "nodeId")
-    RoomDTO toDto(Room entity);
+@Getter
+@Setter
+@NoArgsConstructor
+public class StairsDTO {
+    private Long id;
 
-    @Mapping(target = "floor.id", source = "floorId")
-    @Mapping(target = "node.id", source = "nodeId")
-    Room toEntity(RoomDTO dto);
+    @NotNull(message = "ID этажа обязателен")
+    private Long floorId;
 
-    List<RoomDTO> toDtoList(List<Room> entities);
-    List<Room> toEntityList(List<RoomDTO> dtos);
+    private Long nodeId;
+
+    @NotNull(message = "Контур лестницы обязателен")
+    @Size(min = 3, message = "Контур лестницы должен содержать минимум 3 точки")
+    private List<PointDTO> points;
+
+    private Long[] floors;
 }

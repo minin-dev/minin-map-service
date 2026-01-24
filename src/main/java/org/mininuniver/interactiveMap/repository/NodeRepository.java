@@ -17,25 +17,18 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.mininuniver.interactiveMap.mapper;
+package org.mininuniver.interactiveMap.repository;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mininuniver.interactiveMap.dto.map.RoomDTO;
-import org.mininuniver.interactiveMap.model.Room;
+import org.mininuniver.interactiveMap.model.Node;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
-public interface RoomMapper {
-    @Mapping(source = "floor.id", target = "floorId")
-    @Mapping(source = "node.id", target = "nodeId")
-    RoomDTO toDto(Room entity);
+@Repository
+public interface NodeRepository extends JpaRepository<Node, Long>{
+    List<Node> findByFloorId(Long floorId);
+    List<Node> findAll();
 
-    @Mapping(target = "floor.id", source = "floorId")
-    @Mapping(target = "node.id", source = "nodeId")
-    Room toEntity(RoomDTO dto);
-
-    List<RoomDTO> toDtoList(List<Room> entities);
-    List<Room> toEntityList(List<RoomDTO> dtos);
+    void deleteAllByFloorId(Long floorId);
 }

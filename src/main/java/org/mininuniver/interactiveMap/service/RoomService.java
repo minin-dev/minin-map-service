@@ -21,8 +21,8 @@ package org.mininuniver.interactiveMap.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.mininuniver.interactiveMap.api.dto.map.room.RoomDTO;
-import org.mininuniver.interactiveMap.domain.repository.RoomRepository;
+import org.mininuniver.interactiveMap.dto.map.RoomDTO;
+import org.mininuniver.interactiveMap.repository.RoomRepository;
 import org.mininuniver.interactiveMap.mapper.RoomMapper;
 import org.springframework.stereotype.Service;
 
