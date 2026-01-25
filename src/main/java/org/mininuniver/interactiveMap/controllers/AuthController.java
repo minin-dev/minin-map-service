@@ -26,8 +26,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.mininuniver.interactiveMap.dto.auth.Request;
-import org.mininuniver.interactiveMap.dto.auth.Response;
+import org.mininuniver.interactiveMap.dto.auth.LoginRequest;
+import org.mininuniver.interactiveMap.dto.auth.LoginResponse;
 import org.mininuniver.interactiveMap.dto.auth.RefreshTokenRequest;
 import org.mininuniver.interactiveMap.dto.auth.AuthResponse;
 import org.mininuniver.interactiveMap.security.JwtUtil;
@@ -66,7 +66,7 @@ public class AuthController {
             @ApiResponse(responseCode = "500", description = "Ошибка сервера", content = @Content)
     })
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> createAuthenticationToken(@RequestBody @Valid Request request) {
+    public ResponseEntity<AuthResponse> createAuthenticationToken(@RequestBody @Valid LoginRequest request) {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
@@ -87,11 +87,11 @@ public class AuthController {
             @ApiResponse(responseCode = "200", description = "Токен успешно обновлен",
                     content = @io.swagger.v3.oas.annotations.media.Content(
                             mediaType = "application/json",
-                            schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = Response.class))),
+                            schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = LoginResponse.class))),
             @ApiResponse(responseCode = "401", description = "Недействительный refresh токен", content = @Content)
     })
     @PostMapping("/refresh")
-    public ResponseEntity<Response> refreshToken(@RequestBody @Valid RefreshTokenRequest refreshRequest) {
+    public ResponseEntity<LoginResponse> refreshToken(@RequestBody @Valid RefreshTokenRequest refreshRequest) {
         try {
             String refreshToken = refreshRequest.getRefreshToken();
 
@@ -108,7 +108,7 @@ public class AuthController {
 
             String newAccessToken = jwtUtil.generateToken(userDetails);
             
-            return ResponseEntity.ok(new Response(newAccessToken));
+            return ResponseEntity.ok(new LoginResponse(newAccessToken));
         } catch (io.jsonwebtoken.JwtException e) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid token: " + e.getMessage());
         }

@@ -17,7 +17,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.mininuniver.interactiveMap.exeption;
+package org.mininuniver.interactiveMap.exception;
 
 import java.time.LocalDateTime;
 import java.util.Map;

@@ -19,11 +19,21 @@
 
 package org.mininuniver.interactiveMap.dto.auth;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
-public class Response {
-    private final String token;
+public class LoginRequest {
+    @NotNull(message = "Имя пользователя не может быть пустым")
+    private String username;
+
+    @NotNull(message = "Пароль не может быть пустым")
+    private String password;
 }
+
