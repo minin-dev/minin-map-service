@@ -47,7 +47,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("${api.base.path}/auth")
 @RequiredArgsConstructor
 @Tag(name = "Auth API", description = "API для аутентификации пользователей")
 public class AuthController {

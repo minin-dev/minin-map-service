@@ -33,7 +33,7 @@ import org.mininuniver.interactiveMap.service.FloorService;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("${api.base.path}/admin")
 @Tag(name = "Admin API", description = "API для администраторов")
 public class AdminController {
 

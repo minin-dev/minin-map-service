@@ -4,8 +4,8 @@ plugins {
     id("io.spring.dependency-management") version "1.1.4"
 }
 
-group = "org.mininuniver"
-version = "0.2.1-SNAPSHOT"
+group = "dev.eiztrips.minin"
+version = "1.0.0-SNAPSHOT"
 
 java {
     toolchain {

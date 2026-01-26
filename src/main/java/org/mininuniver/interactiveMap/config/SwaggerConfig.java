@@ -35,7 +35,7 @@ public class SwaggerConfig {
                 .info(new Info()
                         .title("Интерактивная карта Mininuniver API")
                         .description("API для взаимодействия с интерактивной картой")
-                        .version("0.2.1")
+                        .version("${version}")
                         .contact(new Contact()
                                 .name("Eiztrips")
                                 .url("https://github.com/Eiztrips"))

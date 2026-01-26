@@ -41,7 +41,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/map")
+@RequestMapping("${api.base.path}/map")
 @RequiredArgsConstructor
 @Tag(name = "Map API", description = "API для работы с картой здания")
 public class MapController {
