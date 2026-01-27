@@ -34,14 +34,7 @@ import java.util.List;
 @Entity
 @Table(name = "Floors")
 @Schema(name = "FloorEntity", description = "Модель этажа (entity)")
-public class Floor {
-    @Version
-    @Column(name = "version", nullable = false)
-    private Long version;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Floor extends DefaultObject {
 
     private Integer number;
 

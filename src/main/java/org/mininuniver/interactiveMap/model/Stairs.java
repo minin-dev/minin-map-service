@@ -37,14 +37,7 @@ import java.util.List;
 @NoArgsConstructor
 @Table(name = "Stairs")
 @Schema(name = "StairsEntity", description = "Модель лестницы (entity)")
-public class Stairs {
-    @Version
-    @Column(name = "version", nullable = false)
-    private Long version;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Stairs extends MapObject {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "floor_id")
@@ -52,7 +45,7 @@ public class Stairs {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "node_id")
-    private Node node;
+    private GraphNode node;
 
     @Column(columnDefinition = "jsonb")
     @Type(JsonBinaryType.class)

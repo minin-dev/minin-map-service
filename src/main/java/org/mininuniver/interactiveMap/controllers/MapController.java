@@ -31,7 +31,7 @@ import org.mininuniver.interactiveMap.dto.map.MapDTO;
 import org.mininuniver.interactiveMap.dto.map.FloorShortDTO;
 import org.mininuniver.interactiveMap.dto.map.NodeDTO;
 import org.mininuniver.interactiveMap.dto.map.RoomDTO;
-import org.mininuniver.interactiveMap.model.Node;
+import org.mininuniver.interactiveMap.model.GraphNode;
 import org.mininuniver.interactiveMap.model.Room;
 import org.mininuniver.interactiveMap.service.FloorService;
 import org.mininuniver.interactiveMap.service.NodeService;
@@ -106,7 +106,7 @@ public class MapController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Узлы найдены",
                 content = @Content(mediaType = "application/json",
-                schema = @Schema(implementation = Node.class))),
+                schema = @Schema(implementation = GraphNode.class))),
             @ApiResponse(responseCode = "403", description = "Ошибка запроса", content = @Content),
             @ApiResponse(responseCode = "500", description = "Ошибка сервера", content = @Content)
     })

@@ -19,16 +19,16 @@
 
 package org.mininuniver.interactiveMap.repository;
 
-import org.mininuniver.interactiveMap.model.Node;
+import org.mininuniver.interactiveMap.model.GraphNode;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface NodeRepository extends JpaRepository<Node, Long>{
-    List<Node> findByFloorId(Long floorId);
-    List<Node> findAll();
+public interface NodeRepository extends JpaRepository<GraphNode, Long>{
+    List<GraphNode> findByFloorId(Long floorId);
+    List<GraphNode> findAll();
 
     void deleteAllByFloorId(Long floorId);
 }

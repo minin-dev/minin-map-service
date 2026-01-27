@@ -20,6 +20,7 @@
 package org.mininuniver.interactiveMap.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mininuniver.interactiveMap.dto.map.FloorDTO;
 import org.mininuniver.interactiveMap.dto.map.FloorShortDTO;
 import org.mininuniver.interactiveMap.model.Floor;

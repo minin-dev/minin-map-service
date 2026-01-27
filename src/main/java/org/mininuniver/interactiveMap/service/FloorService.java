@@ -25,7 +25,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.mininuniver.interactiveMap.dto.map.MapDTO;
 import org.mininuniver.interactiveMap.model.Floor;
-import org.mininuniver.interactiveMap.model.Node;
+import org.mininuniver.interactiveMap.model.GraphNode;
 import org.mininuniver.interactiveMap.model.Room;
 import org.mininuniver.interactiveMap.model.Stairs;
 import org.mininuniver.interactiveMap.repository.FloorRepository;
@@ -104,12 +104,12 @@ public class FloorService {
         floor.setPoints(mapDTO.getFloor().getPoints());
         floor = floorRepository.save(floor);
 
-        List<Node> existingNodes = nodeRepository.findByFloorId(floor.getId());
+        List<GraphNode> existingNodes = nodeRepository.findByFloorId(floor.getId());
         List<Room> existingRooms = roomRepository.findByFloorId(floor.getId());
         List<Stairs> existingStairs = stairsRepository.findByFloorId(floor.getId());
 
-        Map<Long, Node> existingNodesMap = existingNodes.stream()
-                .collect(Collectors.toMap(Node::getId, n -> n));
+        Map<Long, GraphNode> existingNodesMap = existingNodes.stream()
+                .collect(Collectors.toMap(GraphNode::getId, n -> n));
         Map<Long, Room> existingRoomsMap = existingRooms.stream()
                 .collect(Collectors.toMap(Room::getId, r -> r));
         Map<Long, Stairs> existingStairsMap = existingStairs.stream()
@@ -117,15 +117,15 @@ public class FloorService {
 
         Map<Long, Long> nodeIdMapping = new HashMap<>();
 
-        List<Node> updatedNodes = new ArrayList<>();
+        List<GraphNode> updatedNodes = new ArrayList<>();
         for (NodeDTO nodeDTO : mapDTO.getNodes()) {
-            Node node;
+            GraphNode node;
             if (nodeDTO.getId() != null && existingNodesMap.containsKey(nodeDTO.getId())) {
                 node = existingNodesMap.get(nodeDTO.getId());
                 node.setPos(nodeDTO.getPos());
                 existingNodesMap.remove(nodeDTO.getId());
             } else {
-                node = new Node();
+                node = new GraphNode();
                 node.setPos(nodeDTO.getPos());
                 node.setFloor(floor);
             }
@@ -141,7 +141,7 @@ public class FloorService {
 
         for (int i = 0; i < mapDTO.getNodes().size(); i++) {
             NodeDTO nodeDTO = mapDTO.getNodes().get(i);
-            Node node = updatedNodes.get(i);
+            GraphNode node = updatedNodes.get(i);
 
             if (nodeDTO.getNeighbors() != null) {
                 Long[] newNeighbors = Arrays.stream(nodeDTO.getNeighbors())
@@ -173,8 +173,8 @@ public class FloorService {
 
             if (roomDTO.getNodeId() != null) {
                 Long mappedNodeId = nodeIdMapping.getOrDefault(roomDTO.getNodeId(), roomDTO.getNodeId());
-                Node node = nodeRepository.findById(mappedNodeId)
-                        .orElseThrow(() -> new EntityNotFoundException("Node с id " + mappedNodeId + " не найден"));
+                GraphNode node = nodeRepository.findById(mappedNodeId)
+                        .orElseThrow(() -> new EntityNotFoundException("GraphNode с id " + mappedNodeId + " не найден"));
                 room.setNode(node);
             }
 
@@ -198,7 +198,7 @@ public class FloorService {
 
             if (stairsDTO.getNodeId() != null) {
                 Long mappedNodeId = nodeIdMapping.getOrDefault(stairsDTO.getNodeId(), stairsDTO.getNodeId());
-                Node node = new Node();
+                GraphNode node = new GraphNode();
                 node.setId(mappedNodeId);
                 stairs.setNode(node);
             }
@@ -225,7 +225,7 @@ public class FloorService {
         Map<Long, Long> nodeIdMapping = new HashMap<>();
 
         for (NodeDTO nodeDTO : mapDTO.getNodes()) {
-            Node node = new Node();
+            GraphNode node = new GraphNode();
             node.setPos(nodeDTO.getPos());
             node.setFloor(floor);
             node = nodeRepository.save(node);
@@ -242,7 +242,7 @@ public class FloorService {
 
             if (roomDTO.getNodeId() != null) {
                 Long mappedNodeId = nodeIdMapping.getOrDefault(roomDTO.getNodeId(), roomDTO.getNodeId());
-                Node node = new Node();
+                GraphNode node = new GraphNode();
                 node.setId(mappedNodeId);
                 room.setNode(node);
             }
@@ -258,7 +258,7 @@ public class FloorService {
 
             if (stairsDTO.getNodeId() != null) {
                 Long mappedNodeId = nodeIdMapping.getOrDefault(stairsDTO.getNodeId(), stairsDTO.getNodeId());
-                Node node = new Node();
+                GraphNode node = new GraphNode();
                 node.setId(mappedNodeId);
                 stairs.setNode(node);
             }

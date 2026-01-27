@@ -22,18 +22,18 @@ package org.mininuniver.interactiveMap.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mininuniver.interactiveMap.dto.map.NodeDTO;
-import org.mininuniver.interactiveMap.model.Node;
+import org.mininuniver.interactiveMap.model.GraphNode;
 
 import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface NodeMapper {
     @Mapping(source = "floor.id", target = "floorId")
-    NodeDTO toDto(Node entity);
+    NodeDTO toDto(GraphNode entity);
 
     @Mapping(target = "floor.id", source = "floorId")
-    Node toEntity(NodeDTO dto);
+    GraphNode toEntity(NodeDTO dto);
 
-    List<NodeDTO> toDtoList(List<Node> entities);
-    List<Node> toEntityList(List<NodeDTO> dtos);
+    List<NodeDTO> toDtoList(List<GraphNode> entities);
+    List<GraphNode> toEntityList(List<NodeDTO> dtos);
 }

@@ -36,14 +36,7 @@ import java.util.Map;
 @NoArgsConstructor
 @Table(name = "Nodes")
 @Schema(name = "NodeEntity", description = "Модель узла (entity)")
-public class Node {
-    @Version
-    @Column(name = "version", nullable = false)
-    private Long version;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class GraphNode extends DefaultObject {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "floor_id")
