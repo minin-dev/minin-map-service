@@ -194,7 +194,7 @@ public class FloorService {
 
             stairs.setFloor(floor);
             stairs.setPoints(stairsDTO.getPoints());
-            stairs.setFloors(stairsDTO.getFloors());
+            stairs.setStairs(stairsDTO.getStairs());
 
             if (stairsDTO.getNodeId() != null) {
                 Long mappedNodeId = nodeIdMapping.getOrDefault(stairsDTO.getNodeId(), stairsDTO.getNodeId());
@@ -254,7 +254,7 @@ public class FloorService {
             Stairs stairs = new Stairs();
             stairs.setFloor(floor);
             stairs.setPoints(stairsDTO.getPoints());
-            stairs.setFloors(stairsDTO.getFloors());
+            stairs.setStairs(stairsDTO.getStairs());
 
             if (stairsDTO.getNodeId() != null) {
                 Long mappedNodeId = nodeIdMapping.getOrDefault(stairsDTO.getNodeId(), stairsDTO.getNodeId());
@@ -275,7 +275,7 @@ public class FloorService {
                 .orElseThrow(() -> new EntityNotFoundException("Этаж с номером " + number + " не найден"));
 
         try {
-            stairsRepository.removeFloorByFloorId(floor.getId());
+            stairsRepository.deleteAllByFloorId(floor.getId());
             roomRepository.deleteAllByFloorId(floor.getId());
             nodeRepository.deleteAllByFloorId(floor.getId());
             floorRepository.delete(floor);

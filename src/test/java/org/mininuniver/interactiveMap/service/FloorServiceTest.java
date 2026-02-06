@@ -147,7 +147,7 @@ public class FloorServiceTest {
 
         Stairs stairs = new Stairs();
         stairs.setId(1L);
-        stairs.setFloors(new Long[]{1L});
+        stairs.setFloor(this.floor);
 
         GraphNode node = new GraphNode();
         node.setId(1L);
@@ -201,7 +201,7 @@ public class FloorServiceTest {
         roomDTO.setPoints(createPoints());
 
         StairsDTO stairsDTO = new StairsDTO();
-        stairsDTO.setFloors(new Long[]{1L});
+        stairsDTO.setFloorId(1L);
         stairsDTO.setPoints(createPoints());
 
         MapDTO inputDTO = new MapDTO(floorDTO, List.of(roomDTO), List.of(stairsDTO), List.of(nodeDTO));
@@ -251,7 +251,7 @@ public class FloorServiceTest {
 
         StairsDTO stairsDTO = new StairsDTO();
         stairsDTO.setId(1L);
-        stairsDTO.setFloors(new Long[]{1L});
+        stairsDTO.setFloorId(1L);
         stairsDTO.setPoints(createPoints());
 
         MapDTO inputDTO = new MapDTO(floorDTO, List.of(roomDTO), List.of(stairsDTO), List.of(nodeDTO));
@@ -265,7 +265,7 @@ public class FloorServiceTest {
 
         Stairs existingStairs = new Stairs();
         existingStairs.setId(1L);
-        existingStairs.setFloors(new Long[]{1L});
+        existingStairs.setFloor(this.floor);
 
         when(floorRepository.findByNumber(1)).thenReturn(Optional.of(floor));
         when(floorRepository.save(any(Floor.class))).thenReturn(floor);
@@ -303,7 +303,7 @@ public class FloorServiceTest {
 
         floorService.deleteFloor(1);
 
-        verify(stairsRepository).removeFloorByFloorId(1L);
+        verify(stairsRepository).deleteAllByFloorId(1L);
         verify(roomRepository).deleteAllByFloorId(1L);
         verify(nodeRepository).deleteAllByFloorId(1L);
         verify(floorRepository).delete(floor);

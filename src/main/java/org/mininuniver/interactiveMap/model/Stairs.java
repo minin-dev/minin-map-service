@@ -39,28 +39,20 @@ import java.util.List;
 @Schema(name = "StairsEntity", description = "Модель лестницы (entity)")
 public class Stairs extends MapObject {
 
-    @Column(name = "floors", columnDefinition = "bigint[]")
-    @Type(LongArrayType.class)
-    private Long[] floors;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "floor_id")
+    private Floor floor;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "node_id")
     private GraphNode node;
 
+    @Column(name = "stairs", columnDefinition = "bigint[]")
+    @Type(LongArrayType.class)
+    private Long[] stairs;
+
     @Column(columnDefinition = "jsonb")
     @Type(JsonBinaryType.class)
     private List<PointDTO> points;
 
-    public void setFloor(Floor floor) {
-        if (floor != null) {
-            if (this.floors == null) {
-                this.floors = new Long[]{floor.getId()};
-            } else {
-                Long[] newFloors = new Long[this.floors.length + 1];
-                System.arraycopy(this.floors, 0, newFloors, 0, this.floors.length);
-                newFloors[this.floors.length] = floor.getId();
-                this.floors = newFloors;
-            }
-        }
-    }
 }

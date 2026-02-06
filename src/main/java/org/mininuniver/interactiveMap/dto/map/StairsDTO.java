@@ -33,9 +33,11 @@ import java.util.List;
 public class StairsDTO {
     private Long id;
 
-    private Long[] floors;
+    private Long floorId;
 
     private Long nodeId;
+
+    private Long[] stairs;
 
     @NotNull(message = "Контур лестницы обязателен")
     @Size(min = 3, message = "Контур лестницы должен содержать минимум 3 точки")

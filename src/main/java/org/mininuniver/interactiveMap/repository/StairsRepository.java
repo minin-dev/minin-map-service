@@ -28,38 +28,7 @@ import java.util.List;
 
 @Repository
 public interface StairsRepository extends JpaRepository<Stairs, Long>{
-    default List<Stairs> findByFloorId(Long floorId) {
-        return findAll().stream()
-                .filter(stairs -> {
-                    Long[] floors = stairs.getFloors();
-                    if (floors != null) {
-                        for (Long fId : floors) {
-                            if (fId.equals(floorId)) {
-                                return true;
-                            }
-                        }
-                    }
-                    return false;
-                })
-                .toList();
-    };
+    List<Stairs> findByFloorId(Long floorId);
 
-    default void removeFloorByFloorId(Long floorId) {
-        List<Stairs> stairsToDelete = findByFloorId(floorId);
-        for (Stairs stairs : stairsToDelete) {
-            Long[] floors = stairs.getFloors();
-            if (floors != null) {
-                Long[] newFloors = new Long[floors.length - 1];
-                int index = 0;
-                for (Long fId : floors) {
-                    if (!fId.equals(floorId)) {
-                        newFloors[index++] = fId;
-                    }
-                }
-                if (floors.length == 1) delete(stairs);
-                stairs.setFloors(newFloors);
-                save(stairs);
-            }
-        }
-    }
+    void deleteAllByFloorId(Long floorId);
 }
