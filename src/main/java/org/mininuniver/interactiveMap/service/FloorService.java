@@ -56,13 +56,13 @@ public class FloorService {
 
     private final FloorMapper floorMapper;
     private final RoomMapper roomMapper;
-    private final StairsMapper stairsMapper;
     private final NodeMapper nodeMapper;
+    private final StairsMapper stairsMapper;
 
     private final FloorRepository floorRepository;
     private final RoomRepository roomRepository;
-    private final StairsRepository stairsRepository;
     private final NodeRepository nodeRepository;
+    private final StairsRepository stairsRepository;
 
     public List<FloorShortDTO> getAllFloors() {
         List<Floor> floors = floorRepository.findAll();
@@ -275,8 +275,8 @@ public class FloorService {
                 .orElseThrow(() -> new EntityNotFoundException("Этаж с номером " + number + " не найден"));
 
         try {
+            stairsRepository.removeFloorByFloorId(floor.getId());
             roomRepository.deleteAllByFloorId(floor.getId());
-            stairsRepository.deleteAllByFloorId(floor.getId());
             nodeRepository.deleteAllByFloorId(floor.getId());
             floorRepository.delete(floor);
         } catch (OptimisticLockException e) {

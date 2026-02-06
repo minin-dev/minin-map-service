@@ -1,0 +1,152 @@
+/*
+ * This file is part of mininuniver-interactive-map-service.
+ *
+ * Copyright (C) 2026 Eiztrips
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
+package org.mininuniver.interactiveMap.controllers;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Test;
+import org.mininuniver.interactiveMap.dto.map.*;
+import org.mininuniver.interactiveMap.security.JwtUtil;
+import org.mininuniver.interactiveMap.service.FloorService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.http.MediaType;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+@WebMvcTest(AdminController.class)
+public class AdminControllerWebMvcTest {
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @MockitoBean
+    private FloorService floorService;
+
+    @MockitoBean
+    private JwtUtil jwtUtil;
+
+    @MockitoBean
+    private UserDetailsService userDetailsService;
+
+    private List<PointDTO> createPoints() {
+        List<PointDTO> points = new ArrayList<>();
+        PointDTO p1 = new PointDTO();
+        p1.setX(0);
+        p1.setY(0);
+        PointDTO p2 = new PointDTO();
+        p2.setX(100);
+        p2.setY(0);
+        PointDTO p3 = new PointDTO();
+        p3.setX(100);
+        p3.setY(100);
+        points.add(p1);
+        points.add(p2);
+        points.add(p3);
+        return points;
+    }
+
+    private MapDTO createMapDTO() {
+        FloorDTO floorDTO = new FloorDTO();
+        floorDTO.setId(1L);
+        floorDTO.setNumber(1);
+        floorDTO.setName("Первый этаж");
+        floorDTO.setPoints(createPoints());
+        return new MapDTO(floorDTO, List.of(), List.of(), List.of());
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void updateFloorData_ok() throws Exception {
+        MapDTO mapDTO = createMapDTO();
+        when(floorService.updateFloorData(eq(1), any(MapDTO.class))).thenReturn(mapDTO);
+
+        mockMvc.perform(put("/api/v1/admin/floors/1")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(mapDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.floor.id").value(1))
+                .andExpect(jsonPath("$.floor.name").value("Первый этаж"));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void createFloor_ok() throws Exception {
+        MapDTO mapDTO = createMapDTO();
+        when(floorService.createFloor(eq(1), any(MapDTO.class))).thenReturn(mapDTO);
+
+        mockMvc.perform(post("/api/v1/admin/floors/1")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(mapDTO)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.floor.id").value(1));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void deleteFloor_ok() throws Exception {
+        doNothing().when(floorService).deleteFloor(1);
+
+        mockMvc.perform(delete("/api/v1/admin/floors/1")
+                        .with(csrf()))
+                .andExpect(status().isNoContent());
+
+        verify(floorService).deleteFloor(1);
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void resetDatabase_ok() throws Exception {
+        doNothing().when(floorService).resetDatabase();
+
+        mockMvc.perform(delete("/api/v1/admin/reset-db")
+                        .with(csrf()))
+                .andExpect(status().isNoContent());
+
+        verify(floorService).resetDatabase();
+    }
+
+    @Test
+    void updateFloorData_unauthorized() throws Exception {
+        MapDTO mapDTO = createMapDTO();
+
+        mockMvc.perform(put("/api/v1/admin/floors/1")
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(mapDTO)))
+                .andExpect(status().isUnauthorized());
+    }
+}

@@ -32,6 +32,7 @@ public interface FloorMapper {
     FloorDTO toDto(Floor entity);
     FloorShortDTO toShortDto(Floor entity);
 
+    @Mapping(target = "version", ignore = true)
     Floor toEntity(FloorDTO dto);
 
     List<FloorDTO> toDtoList(List<Floor> entities);

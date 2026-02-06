@@ -38,8 +38,6 @@ import java.util.List;
 @Schema(name = "RoomEntity", description = "Модель комнаты (entity)")
 public class Room extends MapObject{
 
-    private String name;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "floor_id")
     private Floor floor;

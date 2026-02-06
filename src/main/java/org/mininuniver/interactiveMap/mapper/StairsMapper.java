@@ -28,12 +28,12 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface StairsMapper {
-    @Mapping(source = "floor.id", target = "floorId")
     @Mapping(source = "node.id", target = "nodeId")
     StairsDTO toDto(Stairs entity);
 
-    @Mapping(target = "floor.id", source = "floorId")
     @Mapping(target = "node.id", source = "nodeId")
+    @Mapping(target = "version", ignore = true)
+    @Mapping(target = "name", ignore = true)
     Stairs toEntity(StairsDTO dto);
 
     List<StairsDTO> toDtoList(List<Stairs> entities);

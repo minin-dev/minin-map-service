@@ -65,10 +65,10 @@ public class SecurityConfig {
                             .requestMatchers("/**").permitAll()
                             .anyRequest().authenticated()
                     )
-                    .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                    .addFilterBefore(new JwtExceptionHandlerFilter(), UsernamePasswordAuthenticationFilter.class)
-                    .addFilterBefore(loginRateLimitFilter(), UsernamePasswordAuthenticationFilter.class)
-                    .addFilterAt(jwtFilter(userDetailsService, jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                    .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                    //.addFilterBefore(new JwtExceptionHandlerFilter(), UsernamePasswordAuthenticationFilter.class)
+                    //.addFilterBefore(loginRateLimitFilter(), UsernamePasswordAuthenticationFilter.class)
+                    //.addFilterAt(jwtFilter(userDetailsService, jwtUtil), UsernamePasswordAuthenticationFilter.class);
         } else {
             http
                     .cors(Customizer.withDefaults())

@@ -31,7 +31,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
 
     // Hypersistence utilities (Hibernate extensions)
-    implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.7.5")
+    implementation("io.hypersistence:hypersistence-utils-hibernate-63:3.9.2")
 
     // PostgreSQL driver
     implementation ("org.postgresql:postgresql:42.7.7")
@@ -55,6 +55,7 @@ dependencies {
     // Dev tools and test dependencies
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.security:spring-security-test")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.mockito:mockito-core")
     testImplementation("org.assertj:assertj-core")

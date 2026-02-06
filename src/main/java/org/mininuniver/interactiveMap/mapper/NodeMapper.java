@@ -32,6 +32,7 @@ public interface NodeMapper {
     NodeDTO toDto(GraphNode entity);
 
     @Mapping(target = "floor.id", source = "floorId")
+    @Mapping(target = "version", ignore = true)
     GraphNode toEntity(NodeDTO dto);
 
     List<NodeDTO> toDtoList(List<GraphNode> entities);

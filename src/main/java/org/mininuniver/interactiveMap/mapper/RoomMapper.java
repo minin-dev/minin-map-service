@@ -34,6 +34,7 @@ public interface RoomMapper {
 
     @Mapping(target = "floor.id", source = "floorId")
     @Mapping(target = "node.id", source = "nodeId")
+    @Mapping(target = "version", ignore = true)
     Room toEntity(RoomDTO dto);
 
     List<RoomDTO> toDtoList(List<Room> entities);
