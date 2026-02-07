@@ -24,6 +24,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.mininuniver.interactiveMap.dto.map.*;
 import org.mininuniver.interactiveMap.security.JwtUtil;
+import org.mininuniver.interactiveMap.service.BuildingService;
 import org.mininuniver.interactiveMap.service.FloorService;
 import org.mininuniver.interactiveMap.service.NodeService;
 import org.mininuniver.interactiveMap.service.RoomService;
@@ -53,6 +54,9 @@ public class MapControllerWebMvcTest {
 
     @MockitoBean
     private FloorService floorService;
+
+    @MockitoBean
+    private BuildingService buildingService;
 
     @MockitoBean
     private RoomService roomService;
@@ -86,16 +90,16 @@ public class MapControllerWebMvcTest {
     @Test
     @WithMockUser
     void getFloorByNumber_ok() throws Exception {
-        FloorDTO floorDTO = new FloorDTO();
-        floorDTO.setId(1L);
-        floorDTO.setNumber(1);
-        floorDTO.setName("Первый этаж");
-        floorDTO.setPoints(createPoints());
+        FloorShortDTO floorShortDTO = new FloorShortDTO();
+        floorShortDTO.setId(1L);
+        floorShortDTO.setNumber(1);
+        floorShortDTO.setName("Первый этаж");
+        floorShortDTO.setPoints(createPoints());
 
-        MapDTO mapDTO = new MapDTO(floorDTO, List.of(), List.of(), List.of());
-        when(floorService.getMapData(1)).thenReturn(mapDTO);
+        FloorDTO mapDTO = new FloorDTO(floorShortDTO, List.of(), List.of(), List.of());
+        when(floorService.getFloorDataByBuildingIdAndNumber(1L, 1)).thenReturn(mapDTO);
 
-        mockMvc.perform(get("/api/v1/map/floors/1"))
+        mockMvc.perform(get("/api/v1/map/buildings/1/floors/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.floor.id").value(1))
                 .andExpect(jsonPath("$.floor.name").value("Первый этаж"));
@@ -104,9 +108,9 @@ public class MapControllerWebMvcTest {
     @Test
     @WithMockUser
     void getFloorByNumber_notFound() throws Exception {
-        when(floorService.getMapData(99)).thenThrow(new EntityNotFoundException("Этаж не найден"));
+        when(floorService.getFloorDataByBuildingIdAndNumber(1L, 99)).thenThrow(new EntityNotFoundException("Этаж не найден"));
 
-        mockMvc.perform(get("/api/v1/map/floors/99"))
+        mockMvc.perform(get("/api/v1/map/buildings/1/floors/99"))
                 .andExpect(status().isNotFound());
     }
 
@@ -123,9 +127,9 @@ public class MapControllerWebMvcTest {
         floor2.setNumber(2);
         floor2.setName("Второй этаж");
 
-        when(floorService.getAllFloors()).thenReturn(List.of(floor1, floor2));
+        when(floorService.getFloorsByBuildingId(1L)).thenReturn(List.of(floor1, floor2));
 
-        mockMvc.perform(get("/api/v1/map/floors"))
+        mockMvc.perform(get("/api/v1/map/buildings/1/floors"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(2))
@@ -201,7 +205,7 @@ public class MapControllerWebMvcTest {
 
     @Test
     void getFloorByNumber_unauthorized() throws Exception {
-        mockMvc.perform(get("/api/v1/map/floors/1"))
+        mockMvc.perform(get("/api/v1/map/buildings/1/floors/1"))
                 .andExpect(status().isUnauthorized());
     }
 }

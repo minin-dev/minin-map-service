@@ -27,11 +27,19 @@ import org.mininuniver.interactiveMap.model.Floor;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {RoomMapper.class, NodeMapper.class, StairsMapper.class})
 public interface FloorMapper {
+    @Mapping(target = "floor", source = ".")
     FloorDTO toDto(Floor entity);
+
+    @Mapping(source = "building.id", target = "buildingId")
     FloorShortDTO toShortDto(Floor entity);
 
+    @Mapping(target = "id", source = "floor.id")
+    @Mapping(target = "number", source = "floor.number")
+    @Mapping(target = "name", source = "floor.name")
+    @Mapping(target = "building.id", source = "floor.buildingId")
+    @Mapping(target = "points", source = "floor.points")
     @Mapping(target = "version", ignore = true)
     Floor toEntity(FloorDTO dto);
 

@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mininuniver.interactiveMap.dto.map.*;
 import org.mininuniver.interactiveMap.security.JwtUtil;
+import org.mininuniver.interactiveMap.service.BuildingService;
 import org.mininuniver.interactiveMap.service.FloorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -55,6 +56,9 @@ public class AdminControllerWebMvcTest {
     private FloorService floorService;
 
     @MockitoBean
+    private BuildingService buildingService;
+
+    @MockitoBean
     private JwtUtil jwtUtil;
 
     @MockitoBean
@@ -77,25 +81,53 @@ public class AdminControllerWebMvcTest {
         return points;
     }
 
-    private MapDTO createMapDTO() {
-        FloorDTO floorDTO = new FloorDTO();
-        floorDTO.setId(1L);
-        floorDTO.setNumber(1);
-        floorDTO.setName("Первый этаж");
-        floorDTO.setPoints(createPoints());
-        return new MapDTO(floorDTO, List.of(), List.of(), List.of());
+    private FloorDTO createMapDTO() {
+        FloorShortDTO floorShortDTO = new FloorShortDTO();
+        floorShortDTO.setId(1L);
+        floorShortDTO.setNumber(1);
+        floorShortDTO.setName("Первый этаж");
+        floorShortDTO.setPoints(createPoints());
+        return new FloorDTO(floorShortDTO, List.of(), List.of(), List.of());
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     void updateFloorData_ok() throws Exception {
-        MapDTO mapDTO = createMapDTO();
-        when(floorService.updateFloorData(eq(1), any(MapDTO.class))).thenReturn(mapDTO);
+        FloorShortDTO floorShortDTO = new FloorShortDTO();
+        floorShortDTO.setId(1L);
+        floorShortDTO.setNumber(1);
+        floorShortDTO.setName("Первый этаж");
+        floorShortDTO.setPoints(createPoints());
 
-        mockMvc.perform(put("/api/v1/admin/floors/1")
-                        .with(csrf())
+        FloorDTO mapDTO = new FloorDTO(floorShortDTO, List.of(), List.of(), List.of());
+
+        when(floorService.updateFloorData(eq(1L), eq(1), any(FloorDTO.class))).thenReturn(mapDTO);
+
+        mockMvc.perform(put("/api/v1/admin/buildings/1/floors/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(mapDTO)))
+                        .content(objectMapper.writeValueAsString(mapDTO))
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.floor.name").value("Первый этаж"));
+    }
+
+    @Test
+    @WithMockUser(roles = "ADMIN")
+    void createFloor_ok() throws Exception {
+        FloorShortDTO floorShortDTO = new FloorShortDTO();
+        floorShortDTO.setId(1L);
+        floorShortDTO.setNumber(1);
+        floorShortDTO.setName("Первый этаж");
+        floorShortDTO.setPoints(createPoints());
+
+        FloorDTO mapDTO = new FloorDTO(floorShortDTO, List.of(), List.of(), List.of());
+
+        when(floorService.createFloor(eq(1L), eq(1), any(FloorDTO.class))).thenReturn(mapDTO);
+
+        mockMvc.perform(post("/api/v1/admin/buildings/1/floors/1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(mapDTO))
+                        .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.floor.id").value(1))
                 .andExpect(jsonPath("$.floor.name").value("Первый этаж"));
@@ -103,28 +135,14 @@ public class AdminControllerWebMvcTest {
 
     @Test
     @WithMockUser(roles = "ADMIN")
-    void createFloor_ok() throws Exception {
-        MapDTO mapDTO = createMapDTO();
-        when(floorService.createFloor(eq(1), any(MapDTO.class))).thenReturn(mapDTO);
-
-        mockMvc.perform(post("/api/v1/admin/floors/1")
-                        .with(csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(mapDTO)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.floor.id").value(1));
-    }
-
-    @Test
-    @WithMockUser(roles = "ADMIN")
     void deleteFloor_ok() throws Exception {
-        doNothing().when(floorService).deleteFloor(1);
+        doNothing().when(floorService).deleteFloor(1L, 1);
 
-        mockMvc.perform(delete("/api/v1/admin/floors/1")
+        mockMvc.perform(delete("/api/v1/admin/buildings/1/floors/1")
                         .with(csrf()))
                 .andExpect(status().isNoContent());
 
-        verify(floorService).deleteFloor(1);
+        verify(floorService).deleteFloor(1L, 1);
     }
 
     @Test
@@ -141,9 +159,9 @@ public class AdminControllerWebMvcTest {
 
     @Test
     void updateFloorData_unauthorized() throws Exception {
-        MapDTO mapDTO = createMapDTO();
+        FloorDTO mapDTO = createMapDTO();
 
-        mockMvc.perform(put("/api/v1/admin/floors/1")
+        mockMvc.perform(put("/api/v1/admin/buildings/1/floors/1")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(mapDTO)))

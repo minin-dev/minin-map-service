@@ -23,20 +23,17 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.OptimisticLockException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.mininuniver.interactiveMap.dto.map.MapDTO;
-import org.mininuniver.interactiveMap.model.Floor;
-import org.mininuniver.interactiveMap.model.GraphNode;
-import org.mininuniver.interactiveMap.model.Room;
-import org.mininuniver.interactiveMap.model.Stairs;
+import org.mininuniver.interactiveMap.dto.map.FloorDTO;
+import org.mininuniver.interactiveMap.model.*;
 import org.mininuniver.interactiveMap.repository.FloorRepository;
 import org.mininuniver.interactiveMap.repository.NodeRepository;
 import org.mininuniver.interactiveMap.repository.RoomRepository;
 import org.mininuniver.interactiveMap.repository.StairsRepository;
+import org.mininuniver.interactiveMap.repository.BuildingRepository;
 import org.mininuniver.interactiveMap.dto.map.NodeDTO;
 import org.mininuniver.interactiveMap.dto.map.RoomDTO;
 import org.mininuniver.interactiveMap.dto.map.StairsDTO;
 import org.mininuniver.interactiveMap.dto.map.FloorShortDTO;
-import org.mininuniver.interactiveMap.dto.map.FloorDTO;
 import org.mininuniver.interactiveMap.mapper.FloorMapper;
 import org.mininuniver.interactiveMap.mapper.NodeMapper;
 import org.mininuniver.interactiveMap.mapper.RoomMapper;
@@ -63,6 +60,7 @@ public class FloorService {
     private final RoomRepository roomRepository;
     private final NodeRepository nodeRepository;
     private final StairsRepository stairsRepository;
+    private final BuildingRepository buildingRepository;
 
     public List<FloorShortDTO> getAllFloors() {
         List<Floor> floors = floorRepository.findAll();
@@ -72,10 +70,20 @@ public class FloorService {
                 .toList();
     }
 
-    public MapDTO getMapData(int number) {
-        Floor floorEntity = floorRepository.findByNumber(number)
+    public List<FloorShortDTO> getFloorsByBuildingId(Long buildingId) {
+        Building building = buildingRepository.findById(buildingId)
+                .orElseThrow(() -> new EntityNotFoundException("Здание с id " + buildingId + " не найдено"));
+
+        return building.getFloors().stream()
+                .sorted(Comparator.comparing(Floor::getNumber))
+                .map(floorMapper::toShortDto)
+                .toList();
+    }
+
+    public FloorDTO getFloorDataByBuildingIdAndNumber(Long buildingId, int number) {
+        Floor floorEntity = floorRepository.findByBuildingIdAndNumber(buildingId, number)
                 .orElseThrow(() -> new EntityNotFoundException("Этаж не найден"));
-        FloorDTO floor = floorMapper.toDto(floorEntity);
+        FloorShortDTO floor = floorMapper.toShortDto(floorEntity);
 
         List<RoomDTO> rooms = roomRepository.findByFloorId(floor.getId())
                 .stream()
@@ -92,13 +100,13 @@ public class FloorService {
                 .map(nodeMapper::toDto)
                 .toList();
 
-        return new MapDTO(floor, rooms, stairs, nodes);
+        return new FloorDTO(floor, rooms, stairs, nodes);
     }
 
     @Transactional
-    public MapDTO updateFloorData(int number, @Valid MapDTO mapDTO) {
-        Floor floor = floorRepository.findByNumber(number)
-                .orElseThrow(() -> new EntityNotFoundException("Этаж с номером " + number + " не найден"));
+    public FloorDTO updateFloorData(Long buildingId, int number, @Valid FloorDTO mapDTO) {
+        Floor floor = floorRepository.findByBuildingIdAndNumber(buildingId, number)
+                .orElseThrow(() -> new EntityNotFoundException("Этаж с номером " + number + " в здании " + buildingId + " не найден"));
         floor.setNumber(number);
         floor.setName(mapDTO.getFloor().getName());
         floor.setPoints(mapDTO.getFloor().getPoints());
@@ -208,15 +216,19 @@ public class FloorService {
 
         stairsRepository.deleteAll(existingStairsMap.values());
 
-        return getMapData(number);
+        return getFloorDataByBuildingIdAndNumber(buildingId, number);
     }
 
     @Transactional
-    public MapDTO createFloor(int number, @Valid MapDTO mapDTO) {
-        if (floorRepository.existsByNumber(number))
-            throw new DuplicateKeyException("Этаж с номером " + number + " уже существует");
+    public FloorDTO createFloor(Long buildingId, int number, @Valid FloorDTO mapDTO) {
+        if (floorRepository.existsByBuildingIdAndNumber(buildingId, number))
+            throw new DuplicateKeyException("Этаж с номером " + number + " уже существует в этом здании");
+
+        Building building = buildingRepository.findById(buildingId)
+                .orElseThrow(() -> new EntityNotFoundException("Здание с id " + buildingId + " не найдено"));
 
         Floor floor = new Floor();
+        floor.setBuilding(building);
         floor.setNumber(number);
         floor.setName(mapDTO.getFloor().getName());
         floor.setPoints(mapDTO.getFloor().getPoints());
@@ -266,13 +278,13 @@ public class FloorService {
             stairsRepository.save(stairs);
         }
 
-        return getMapData(number);
+        return getFloorDataByBuildingIdAndNumber(buildingId, number);
     }
 
     @Transactional
-    public void deleteFloor(int number) {
-        Floor floor = floorRepository.findByNumber(number)
-                .orElseThrow(() -> new EntityNotFoundException("Этаж с номером " + number + " не найден"));
+    public void deleteFloor(Long buildingId, int number) {
+        Floor floor = floorRepository.findByBuildingIdAndNumber(buildingId, number)
+                .orElseThrow(() -> new EntityNotFoundException("Этаж с номером " + number + " в здании " + buildingId + " не найден"));
 
         try {
             stairsRepository.deleteAllByFloorId(floor.getId());
@@ -291,6 +303,7 @@ public class FloorService {
             stairsRepository.deleteAll();
             nodeRepository.deleteAll();
             floorRepository.deleteAll();
+            buildingRepository.deleteAll();
 
             floorRepository.resetSequences();
         } catch (Exception e) {

@@ -20,16 +20,13 @@
 package org.mininuniver.interactiveMap.dto.map;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
 import java.util.Map;
 
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 public class NodeDTO {
+    @NotNull(message = "ID узла обязателен")
     private Long id;
 
     @NotNull(message = "ID этажа обязателен")

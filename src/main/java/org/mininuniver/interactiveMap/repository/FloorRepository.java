@@ -32,7 +32,11 @@ public interface FloorRepository extends JpaRepository<Floor, Long> {
 
     Optional<Floor> findByNumber(int number);
 
+    Optional<Floor> findByBuildingIdAndNumber(Long buildingId, int number);
+
     boolean existsByNumber(int number);
+
+    boolean existsByBuildingIdAndNumber(Long buildingId, int number);
 
     @Modifying
     @Query(value = "DO $$ DECLARE seq RECORD; " +

@@ -26,10 +26,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.mininuniver.interactiveMap.dto.map.MapDTO;
+import org.mininuniver.interactiveMap.dto.map.FloorDTO;
+import org.mininuniver.interactiveMap.dto.map.BuildingShortDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.mininuniver.interactiveMap.service.FloorService;
+import org.mininuniver.interactiveMap.service.BuildingService;
 
 @RequiredArgsConstructor
 @RestController
@@ -38,35 +40,67 @@ import org.mininuniver.interactiveMap.service.FloorService;
 public class AdminController {
 
     private final FloorService floorService;
+    private final BuildingService buildingService;
 
-    @Operation(summary = "Изменить/добавить данные этажа по номеру")
+    @Operation(summary = "Создать новое здание")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Здание успешно создано"),
+            @ApiResponse(responseCode = "400", description = "Некорректные данные", content = @Content)
+    })
+    @PostMapping("/buildings")
+    public BuildingShortDTO createBuilding(@RequestBody @Valid BuildingShortDTO buildingDTO) {
+        return buildingService.createBuilding(buildingDTO);
+    }
+
+    @Operation(summary = "Обновить здание")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Здание успешно обновлено"),
+            @ApiResponse(responseCode = "404", description = "Здание не найдено", content = @Content)
+    })
+    @PutMapping("/buildings/{id}")
+    public BuildingShortDTO updateBuilding(@PathVariable Long id, @RequestBody @Valid BuildingShortDTO buildingDTO) {
+        return buildingService.updateBuilding(id, buildingDTO);
+    }
+
+    @Operation(summary = "Удалить здание")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Здание успешно удалено"),
+            @ApiResponse(responseCode = "404", description = "Здание не найдено", content = @Content)
+    })
+    @DeleteMapping("/buildings/{id}")
+    public ResponseEntity<Void> deleteBuilding(@PathVariable Long id) {
+        buildingService.deleteBuilding(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Изменить/добавить данные этажа по номеру и id здания")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Этаж успешно изменен/добавлен"),
             @ApiResponse(responseCode = "404", description = "Этаж не найден", content = @Content)
     })
-    @PutMapping("/floors/{number}")
-    public MapDTO updateFloorData(@PathVariable int number, @RequestBody @Valid MapDTO mapDTO) {
-        return floorService.updateFloorData(number, mapDTO);
+    @PutMapping("/buildings/{buildingId}/floors/{number}")
+    public FloorDTO updateFloorData(@PathVariable Long buildingId, @PathVariable int number, @RequestBody @Valid FloorDTO mapDTO) {
+        return floorService.updateFloorData(buildingId, number, mapDTO);
     }
 
-    @Operation(summary = "Создать новый этаж по номеру")
+    @Operation(summary = "Создать новый этаж по номеру и id здания")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Этаж успешно создан"),
             @ApiResponse(responseCode = "400", description = "Некорректные данные для создания этажа", content = @Content)
     })
-    @PostMapping("/floors/{number}")
-    public MapDTO createFloor(@PathVariable int number, @RequestBody @Valid MapDTO mapDTO) {
-        return floorService.createFloor(number, mapDTO);
+    @PostMapping("/buildings/{buildingId}/floors/{number}")
+    public FloorDTO createFloor(@PathVariable Long buildingId, @PathVariable int number, @RequestBody @Valid FloorDTO mapDTO) {
+        return floorService.createFloor(buildingId, number, mapDTO);
     }
 
-    @Operation(summary = "Удалить этаж по номеру")
+    @Operation(summary = "Удалить этаж по номеру и id здания")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Этаж успешно удален"),
             @ApiResponse(responseCode = "404", description = "Этаж не найден", content = @Content)
     })
-    @DeleteMapping("/floors/{number}")
-    public ResponseEntity<Void> deleteFloor(@PathVariable int number) {
-        floorService.deleteFloor(number);
+    @DeleteMapping("/buildings/{buildingId}/floors/{number}")
+    public ResponseEntity<Void> deleteFloor(@PathVariable Long buildingId, @PathVariable int number) {
+        floorService.deleteFloor(buildingId, number);
         return ResponseEntity.noContent().build();
     }
 

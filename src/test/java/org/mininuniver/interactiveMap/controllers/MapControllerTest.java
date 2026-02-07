@@ -23,6 +23,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mininuniver.interactiveMap.dto.map.*;
+import org.mininuniver.interactiveMap.service.BuildingService;
 import org.mininuniver.interactiveMap.service.FloorService;
 import org.mininuniver.interactiveMap.service.NodeService;
 import org.mininuniver.interactiveMap.service.RoomService;
@@ -50,27 +51,24 @@ public class MapControllerTest {
     @Mock
     private FloorService floorService;
 
+    @Mock
+    private BuildingService buildingService;
+
     @InjectMocks
     private MapController mapController;
 
-    private FloorDTO floorDTO;
     private FloorShortDTO floorShortDTO;
     private RoomDTO roomDTO;
     private NodeDTO nodeDTO;
-    private MapDTO mapDTO;
+    private FloorDTO mapDTO;
 
     @BeforeEach
     void setUp() {
-        floorDTO = new FloorDTO();
-        floorDTO.setId(1L);
-        floorDTO.setNumber(1);
-        floorDTO.setName("Первый этаж");
-        floorDTO.setPoints(createPoints());
-
         floorShortDTO = new FloorShortDTO();
         floorShortDTO.setId(1L);
         floorShortDTO.setNumber(1);
         floorShortDTO.setName("Первый этаж");
+        floorShortDTO.setPoints(createPoints());
 
         roomDTO = new RoomDTO();
         roomDTO.setId(1L);
@@ -83,7 +81,7 @@ public class MapControllerTest {
         nodeDTO.setFloorId(1L);
         nodeDTO.setPos(Map.of("x", 10, "y", 20));
 
-        mapDTO = new MapDTO(floorDTO, List.of(roomDTO), List.of(), List.of(nodeDTO));
+        mapDTO = new FloorDTO(floorShortDTO, List.of(roomDTO), List.of(), List.of(nodeDTO));
     }
 
     private List<PointDTO> createPoints() {
@@ -105,12 +103,12 @@ public class MapControllerTest {
 
     @Test
     void getFloorByNumber_ok() {
-        when(floorService.getMapData(1)).thenReturn(mapDTO);
+        when(floorService.getFloorDataByBuildingIdAndNumber(1L, 1)).thenReturn(mapDTO);
 
-        MapDTO result = mapController.getFloorByNumber(1);
+        FloorDTO result = mapController.getFloorByBuildingAndNumber(1L, 1);
 
         assertThat(result).isEqualTo(mapDTO);
-        verify(floorService).getMapData(1);
+        verify(floorService).getFloorDataByBuildingIdAndNumber(1L, 1);
     }
 
     @Test
@@ -121,12 +119,12 @@ public class MapControllerTest {
         floor2.setName("Второй этаж");
 
         List<FloorShortDTO> floors = List.of(floorShortDTO, floor2);
-        when(floorService.getAllFloors()).thenReturn(floors);
+        when(floorService.getFloorsByBuildingId(1L)).thenReturn(floors);
 
-        List<FloorShortDTO> result = mapController.getAllFloors();
+        List<FloorShortDTO> result = mapController.getFloorsByBuilding(1L);
 
         assertThat(result).hasSize(2);
-        verify(floorService).getAllFloors();
+        verify(floorService).getFloorsByBuildingId(1L);
     }
 
     @Test

@@ -19,18 +19,15 @@
 
 package org.mininuniver.interactiveMap.dto.map;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.util.List;
 
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 public class RoomDTO {
+    @NotNull(message = "ID комнаты обязателен")
     private Long id;
 
     @NotBlank(message = "Имя комнаты не может быть пустым")

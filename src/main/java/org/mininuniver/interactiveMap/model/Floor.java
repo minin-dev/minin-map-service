@@ -27,6 +27,7 @@ import lombok.Setter;
 import org.hibernate.annotations.Type;
 import org.mininuniver.interactiveMap.dto.map.PointDTO;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Setter
@@ -39,6 +40,19 @@ public class Floor extends DefaultObject {
     private Integer number;
 
     private String name;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "building_id")
+    private Building building;
+
+    @OneToMany(mappedBy = "floor", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Room> rooms = new ArrayList<>();
+
+    @OneToMany(mappedBy = "floor", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<GraphNode> nodes = new ArrayList<>();
+
+    @OneToMany(mappedBy = "floor", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Stairs> stairs = new ArrayList<>();
 
     @Column(columnDefinition = "jsonb")
     @Type(JsonBinaryType.class)

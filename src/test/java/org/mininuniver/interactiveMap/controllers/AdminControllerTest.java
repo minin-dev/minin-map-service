@@ -23,6 +23,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mininuniver.interactiveMap.dto.map.*;
+import org.mininuniver.interactiveMap.service.BuildingService;
 import org.mininuniver.interactiveMap.service.FloorService;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -40,21 +41,24 @@ public class AdminControllerTest {
     @Mock
     private FloorService floorService;
 
+    @Mock
+    private BuildingService buildingService;
+
     @InjectMocks
     private AdminController adminController;
 
-    private MapDTO mapDTO;
     private FloorDTO floorDTO;
+    private FloorShortDTO floorShortDTO;
 
     @BeforeEach
     void setUp() {
-        floorDTO = new FloorDTO();
-        floorDTO.setId(1L);
-        floorDTO.setNumber(1);
-        floorDTO.setName("Первый этаж");
-        floorDTO.setPoints(createPoints());
+        floorShortDTO = new FloorShortDTO();
+        floorShortDTO.setId(1L);
+        floorShortDTO.setNumber(1);
+        floorShortDTO.setName("Первый этаж");
+        floorShortDTO.setPoints(createPoints());
 
-        mapDTO = new MapDTO(floorDTO, List.of(), List.of(), List.of());
+        floorDTO = new FloorDTO(floorShortDTO, List.of(), List.of(), List.of());
     }
 
     private List<PointDTO> createPoints() {
@@ -76,30 +80,30 @@ public class AdminControllerTest {
 
     @Test
     void updateFloorData_ok() {
-        when(floorService.updateFloorData(1, mapDTO)).thenReturn(mapDTO);
+        when(floorService.updateFloorData(1L, 1, floorDTO)).thenReturn(floorDTO);
 
-        MapDTO result = adminController.updateFloorData(1, mapDTO);
+        FloorDTO result = adminController.updateFloorData(1L, 1, floorDTO);
 
-        assertThat(result).isEqualTo(mapDTO);
-        verify(floorService).updateFloorData(1, mapDTO);
+        assertThat(result).isEqualTo(floorDTO);
+        verify(floorService).updateFloorData(1L, 1, floorDTO);
     }
 
     @Test
     void createFloor_ok() {
-        when(floorService.createFloor(1, mapDTO)).thenReturn(mapDTO);
+        when(floorService.createFloor(1L, 1, floorDTO)).thenReturn(floorDTO);
 
-        MapDTO result = adminController.createFloor(1, mapDTO);
+        FloorDTO result = adminController.createFloor(1L, 1, floorDTO);
 
-        assertThat(result).isEqualTo(mapDTO);
-        verify(floorService).createFloor(1, mapDTO);
+        assertThat(result).isEqualTo(floorDTO);
+        verify(floorService).createFloor(1L, 1, floorDTO);
     }
 
     @Test
     void deleteFloor_ok() {
-        var response = adminController.deleteFloor(1);
+        var response = adminController.deleteFloor(1L, 1);
 
         assertThat(response.getStatusCode().value()).isEqualTo(204);
-        verify(floorService).deleteFloor(1);
+        verify(floorService).deleteFloor(1L, 1);
     }
 
     @Test

@@ -21,18 +21,16 @@ package org.mininuniver.interactiveMap.dto.map;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
 import java.util.List;
 
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 public class StairsDTO {
+    @NotNull(message = "ID лестницы обязателен")
     private Long id;
 
+    @NotNull(message = "Этаж обязателен")
     private Long floorId;
 
     private Long nodeId;

@@ -19,14 +19,13 @@
 
 package org.mininuniver.interactiveMap.dto.map;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 public class PointDTO {
+    @NotNull(message = "Координата X обязательна")
     private int x;
+    @NotNull(message = "Координата Y обязательна")
     private int y;
 }

@@ -19,27 +19,14 @@
 
 package org.mininuniver.interactiveMap.dto.map;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
 import java.util.List;
 
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 public class FloorDTO {
-    private Long id;
-
-    @NotNull(message = "Номер этажа обязателен")
-    private Integer number;
-
-    @NotNull(message = "Имя этажа не может быть пустым")
-    private String name;
-
-    @NotNull(message = "Контур этажа обязателен")
-    @Size(min = 3, message = "Контур этажа должен содержать минимум 3 точки")
-    private List<PointDTO> points;
+    private final FloorShortDTO floor;
+    private final List<RoomDTO> rooms;
+    private final List<StairsDTO> stairs;
+    private final List<NodeDTO> nodes;
 }
