@@ -21,6 +21,13 @@ package org.mininuniver.interactiveMap.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import java.util.stream.Collectors;
+import org.mininuniver.interactiveMap.model.Floor;
+import org.mininuniver.interactiveMap.model.GraphNode;
+import org.mininuniver.interactiveMap.model.Room;
+import org.mininuniver.interactiveMap.repository.NodeRepository;
+import org.springframework.transaction.annotation.Transactional;
+import java.util.Map;
 import org.mininuniver.interactiveMap.dto.map.RoomDTO;
 import org.mininuniver.interactiveMap.repository.RoomRepository;
 import org.mininuniver.interactiveMap.mapper.RoomMapper;
@@ -34,6 +41,80 @@ public class RoomService {
 
     private final RoomMapper roomMapper;
     private final RoomRepository roomRepository;
+    private final NodeRepository nodeRepository;
+
+    @Transactional
+    public void deleteAllByFloorId(Long floorId) {
+        roomRepository.deleteAllByFloorId(floorId);
+    }
+
+    @Transactional
+    public void deleteAll() {
+        roomRepository.deleteAll();
+    }
+
+    @Transactional
+    public void updateRoomsForFloor(Floor floor, List<RoomDTO> roomDTOs, Map<Long, Long> nodeIdMapping) {
+        List<Room> existingRooms = roomRepository.findByFloorId(floor.getId());
+        Map<Long, Room> existingRoomsMap = existingRooms.stream()
+                .collect(Collectors.toMap(Room::getId, r -> r));
+
+        Map<String, Room> roomsByName = existingRooms.stream()
+                .collect(Collectors.toMap(Room::getName, r -> r, (r1, r2) -> r1));
+
+        for (RoomDTO roomDTO : roomDTOs) {
+            Room room;
+            if (roomDTO.getId() != null && existingRoomsMap.containsKey(roomDTO.getId())) {
+                room = existingRoomsMap.get(roomDTO.getId());
+                existingRoomsMap.remove(roomDTO.getId());
+            } else if (roomDTO.getName() != null && roomsByName.containsKey(roomDTO.getName())) {
+                room = roomsByName.get(roomDTO.getName());
+                existingRoomsMap.remove(room.getId());
+            } else {
+                room = new Room();
+            }
+
+            room.setName(roomDTO.getName());
+            room.setFloor(floor);
+            room.setPoints(roomDTO.getPoints());
+
+            if (roomDTO.getNodeId() != null) {
+                Long mappedNodeId = nodeIdMapping.getOrDefault(roomDTO.getNodeId(), roomDTO.getNodeId());
+                GraphNode node = nodeRepository.findById(mappedNodeId)
+                        .orElseThrow(() -> new EntityNotFoundException("GraphNode с id " + mappedNodeId + " не найден"));
+                room.setNode(node);
+            }
+
+            roomRepository.save(room);
+        }
+
+        roomRepository.deleteAll(existingRoomsMap.values());
+    }
+
+    @Transactional
+    public void createRoomsForFloor(Floor floor, List<RoomDTO> roomDTOs, Map<Long, Long> nodeIdMapping) {
+        for (RoomDTO roomDTO : roomDTOs) {
+            Room room = new Room();
+            room.setName(roomDTO.getName());
+            room.setFloor(floor);
+            room.setPoints(roomDTO.getPoints());
+
+            if (roomDTO.getNodeId() != null) {
+                Long mappedNodeId = nodeIdMapping.getOrDefault(roomDTO.getNodeId(), roomDTO.getNodeId());
+                GraphNode node = new GraphNode();
+                node.setId(mappedNodeId);
+                room.setNode(node);
+            }
+
+            roomRepository.save(room);
+        }
+    }
+
+    public List<RoomDTO> getRoomsByFloorId(Long floorId) {
+        return roomRepository.findByFloorId(floorId).stream()
+                .map(roomMapper::toDto)
+                .toList();
+    }
 
     public RoomDTO getRoomByFloorIdAndName(Long floorId, String name) {
         return roomRepository.findByFloorIdAndName(floorId, name)

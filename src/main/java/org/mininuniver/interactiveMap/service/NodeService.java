@@ -25,8 +25,12 @@ import org.mininuniver.interactiveMap.repository.NodeRepository;
 import org.mininuniver.interactiveMap.dto.map.NodeDTO;
 import org.mininuniver.interactiveMap.mapper.NodeMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+import org.mininuniver.interactiveMap.model.Floor;
+import org.mininuniver.interactiveMap.model.GraphNode;
 
 @Service
 @RequiredArgsConstructor
@@ -34,6 +38,83 @@ public class NodeService {
 
     private final NodeMapper nodeMapper;
     private final NodeRepository nodeRepository;
+
+    @Transactional
+    public void deleteAllByFloorId(Long floorId) {
+        nodeRepository.deleteAllByFloorId(floorId);
+    }
+
+    @Transactional
+    public void deleteAll() {
+        nodeRepository.deleteAll();
+    }
+
+    public List<NodeDTO> getNodesByFloorId(Long floorId) {
+        return nodeRepository.findByFloorId(floorId).stream()
+                .map(nodeMapper::toDto)
+                .toList();
+    }
+
+    @Transactional
+    public Map<Long, Long> updateNodesForFloor(Floor floor, List<NodeDTO> nodeDTOs) {
+        List<GraphNode> existingNodes = nodeRepository.findByFloorId(floor.getId());
+        Map<Long, GraphNode> existingNodesMap = existingNodes.stream()
+                .collect(Collectors.toMap(GraphNode::getId, n -> n));
+
+        Map<Long, Long> nodeIdMapping = new HashMap<>();
+
+        List<GraphNode> updatedNodes = new ArrayList<>();
+        for (NodeDTO nodeDTO : nodeDTOs) {
+            GraphNode node;
+            if (nodeDTO.getId() != null && existingNodesMap.containsKey(nodeDTO.getId())) {
+                node = existingNodesMap.get(nodeDTO.getId());
+                node.setPos(nodeDTO.getPos());
+                existingNodesMap.remove(nodeDTO.getId());
+            } else {
+                node = new GraphNode();
+                node.setPos(nodeDTO.getPos());
+                node.setFloor(floor);
+            }
+
+            node = nodeRepository.save(node);
+
+            Long oldId = nodeDTO.getId() != null ? nodeDTO.getId() : -node.getId();
+            nodeIdMapping.put(oldId, node.getId());
+            updatedNodes.add(node);
+        }
+
+        nodeRepository.deleteAll(existingNodesMap.values());
+
+        for (int i = 0; i < nodeDTOs.size(); i++) {
+            NodeDTO nodeDTO = nodeDTOs.get(i);
+            GraphNode node = updatedNodes.get(i);
+
+            if (nodeDTO.getNeighbors() != null) {
+                Long[] newNeighbors = Arrays.stream(nodeDTO.getNeighbors())
+                        .map(n -> nodeIdMapping.getOrDefault(n, n))
+                        .toArray(Long[]::new);
+                node.setNeighbors(newNeighbors);
+                nodeRepository.save(node);
+            }
+        }
+        return nodeIdMapping;
+    }
+
+    @Transactional
+    public Map<Long, Long> createNodesForFloor(Floor floor, List<NodeDTO> nodeDTOs) {
+        Map<Long, Long> nodeIdMapping = new HashMap<>();
+
+        for (NodeDTO nodeDTO : nodeDTOs) {
+            GraphNode node = new GraphNode();
+            node.setPos(nodeDTO.getPos());
+            node.setFloor(floor);
+            node = nodeRepository.save(node);
+
+            Long oldId = nodeDTO.getId() != null ? nodeDTO.getId() : -node.getId();
+            nodeIdMapping.put(oldId, node.getId());
+        }
+        return nodeIdMapping;
+    }
 
     public NodeDTO getNodeById(Long id) {
         return nodeRepository.findById(id)

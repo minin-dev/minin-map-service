@@ -25,17 +25,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mininuniver.interactiveMap.dto.map.*;
 import org.mininuniver.interactiveMap.mapper.FloorMapper;
-import org.mininuniver.interactiveMap.mapper.NodeMapper;
-import org.mininuniver.interactiveMap.mapper.RoomMapper;
-import org.mininuniver.interactiveMap.mapper.StairsMapper;
 import org.mininuniver.interactiveMap.model.Floor;
-import org.mininuniver.interactiveMap.model.GraphNode;
-import org.mininuniver.interactiveMap.model.Room;
-import org.mininuniver.interactiveMap.model.Stairs;
 import org.mininuniver.interactiveMap.repository.FloorRepository;
-import org.mininuniver.interactiveMap.repository.NodeRepository;
-import org.mininuniver.interactiveMap.repository.RoomRepository;
-import org.mininuniver.interactiveMap.repository.StairsRepository;
 import org.mininuniver.interactiveMap.repository.BuildingRepository;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -55,21 +46,16 @@ public class FloorServiceTest {
     @Mock
     private FloorMapper floorMapper;
     @Mock
-    private RoomMapper roomMapper;
-    @Mock
-    private NodeMapper nodeMapper;
-    @Mock
-    private StairsMapper stairsMapper;
-    @Mock
     private FloorRepository floorRepository;
     @Mock
-    private RoomRepository roomRepository;
-    @Mock
-    private NodeRepository nodeRepository;
-    @Mock
-    private StairsRepository stairsRepository;
-    @Mock
     private BuildingRepository buildingRepository;
+
+    @Mock
+    private NodeService nodeService;
+    @Mock
+    private RoomService roomService;
+    @Mock
+    private StairsService stairsService;
 
     @InjectMocks
     private FloorService floorService;
@@ -140,22 +126,16 @@ public class FloorServiceTest {
 
     @Test
     void getMap_ok() {
-        List<Room> rooms = List.of(new Room());
-        List<Stairs> stairs = List.of(new Stairs());
-        List<GraphNode> nodes = List.of(new GraphNode());
         RoomDTO roomDTO = new RoomDTO();
         StairsDTO stairsDTO = new StairsDTO();
         NodeDTO nodeDTO = new NodeDTO();
 
         when(floorRepository.findByBuildingIdAndNumber(1L, 1)).thenReturn(Optional.of(floor));
         when(floorMapper.toShortDto(floor)).thenReturn(floorShortDTO);
-        when(roomRepository.findByFloorId(1L)).thenReturn(rooms);
-        when(stairsRepository.findByFloorId(1L)).thenReturn(stairs);
-        when(nodeRepository.findByFloorId(1L)).thenReturn(nodes);
 
-        when(roomMapper.toDto(any(Room.class))).thenReturn(roomDTO);
-        when(stairsMapper.toDto(any(Stairs.class))).thenReturn(stairsDTO);
-        when(nodeMapper.toDto(any(GraphNode.class))).thenReturn(nodeDTO);
+        when(roomService.getRoomsByFloorId(1L)).thenReturn(List.of(roomDTO));
+        when(stairsService.getStairsByFloorId(1L)).thenReturn(List.of(stairsDTO));
+        when(nodeService.getNodesByFloorId(1L)).thenReturn(List.of(nodeDTO));
 
         FloorDTO result = floorService.getFloorDataByBuildingIdAndNumber(1L, 1);
 
@@ -166,7 +146,7 @@ public class FloorServiceTest {
         assertThat(result.getNodes()).hasSize(1);
     }
 
-    @Test
+     @Test
     void getMapData_floorNotFound() {
         when(floorRepository.findByBuildingIdAndNumber(1L, 99)).thenReturn(Optional.empty());
 
@@ -196,26 +176,22 @@ public class FloorServiceTest {
         when(floorRepository.save(any(Floor.class))).thenReturn(floor);
         when(buildingRepository.findById(1L)).thenReturn(Optional.of(new org.mininuniver.interactiveMap.model.Building()));
 
-        GraphNode savedNode = new GraphNode();
-        savedNode.setId(1L);
-        when(nodeRepository.save(any(GraphNode.class))).thenReturn(savedNode);
-        when(roomRepository.save(any(Room.class))).thenReturn(new Room());
-        when(stairsRepository.save(any(Stairs.class))).thenReturn(new Stairs());
-
         when(floorRepository.findByBuildingIdAndNumber(1L, 1)).thenReturn(Optional.of(floor));
         when(floorMapper.toShortDto(floor)).thenReturn(floorShortDTO);
-        when(roomRepository.findByFloorId(1L)).thenReturn(Collections.emptyList());
-        when(stairsRepository.findByFloorId(1L)).thenReturn(Collections.emptyList());
-        when(nodeRepository.findByFloorId(1L)).thenReturn(Collections.emptyList());
+
+        when(nodeService.createNodesForFloor(any(Floor.class), anyList())).thenReturn(new HashMap<>());
+        // roomService, stairsService return void
 
         FloorDTO result = floorService.createFloor(1L, 1, inputDTO);
 
         assertThat(result).isNotNull();
         verify(floorRepository).save(any(Floor.class));
-        verify(nodeRepository).save(any(GraphNode.class));
+        verify(nodeService).createNodesForFloor(any(Floor.class), anyList());
+        verify(roomService).createRoomsForFloor(any(Floor.class), anyList(), anyMap());
+        verify(stairsService).createStairsForFloor(any(Floor.class), anyList(), anyMap());
     }
 
-    @Test
+     @Test
     void createFloor_duplicateFloor() {
         when(floorRepository.existsByBuildingIdAndNumber(1L, 1)).thenReturn(true);
 
@@ -229,50 +205,32 @@ public class FloorServiceTest {
         NodeDTO nodeDTO = new NodeDTO();
         nodeDTO.setId(1L);
         nodeDTO.setPos(Map.of("x", 10, "y", 20));
-        nodeDTO.setNeighbors(new Long[]{});
 
         RoomDTO roomDTO = new RoomDTO();
         roomDTO.setId(1L);
         roomDTO.setName("A101");
-        roomDTO.setPoints(createPoints());
 
         StairsDTO stairsDTO = new StairsDTO();
         stairsDTO.setId(1L);
         stairsDTO.setFloorId(1L);
-        stairsDTO.setPoints(createPoints());
 
         FloorDTO inputDTO = new FloorDTO(floorShortDTO, List.of(roomDTO), List.of(stairsDTO), List.of(nodeDTO));
 
-        GraphNode existingNode = new GraphNode();
-        existingNode.setId(1L);
-
-        Room existingRoom = new Room();
-        existingRoom.setId(1L);
-        existingRoom.setName("A101");
-
-        Stairs existingStairs = new Stairs();
-        existingStairs.setId(1L);
-        existingStairs.setFloor(this.floor);
-
         when(floorRepository.findByBuildingIdAndNumber(1L, 1)).thenReturn(Optional.of(floor));
         when(floorRepository.save(any(Floor.class))).thenReturn(floor);
-        when(nodeRepository.findByFloorId(1L)).thenReturn(List.of(existingNode));
-        when(roomRepository.findByFloorId(1L)).thenReturn(List.of(existingRoom));
-        when(stairsRepository.findByFloorId(1L)).thenReturn(List.of(existingStairs));
-        when(nodeRepository.save(any(GraphNode.class))).thenReturn(existingNode);
-        when(roomRepository.save(any(Room.class))).thenReturn(existingRoom);
-        when(stairsRepository.save(any(Stairs.class))).thenReturn(existingStairs);
 
         when(floorMapper.toShortDto(floor)).thenReturn(floorShortDTO);
-        when(roomMapper.toDto(any(Room.class))).thenReturn(roomDTO);
-        when(stairsMapper.toDto(any(Stairs.class))).thenReturn(stairsDTO);
-        when(nodeMapper.toDto(any(GraphNode.class))).thenReturn(nodeDTO);
+
+        when(nodeService.updateNodesForFloor(any(Floor.class), anyList())).thenReturn(new HashMap<>());
 
         FloorDTO result = floorService.updateFloorData(1L, 1, inputDTO);
 
         assertThat(result).isNotNull();
         verify(floorRepository, times(2)).findByBuildingIdAndNumber(1L, 1);
         verify(floorRepository).save(any(Floor.class));
+        verify(nodeService).updateNodesForFloor(eq(floor), anyList());
+        verify(roomService).updateRoomsForFloor(eq(floor), anyList(), anyMap());
+        verify(stairsService).updateStairsForFloor(eq(floor), anyList(), anyMap());
     }
 
     @Test
@@ -290,9 +248,9 @@ public class FloorServiceTest {
 
         floorService.deleteFloor(1L, 1);
 
-        verify(stairsRepository).deleteAllByFloorId(1L);
-        verify(roomRepository).deleteAllByFloorId(1L);
-        verify(nodeRepository).deleteAllByFloorId(1L);
+        verify(stairsService).deleteAllByFloorId(1L);
+        verify(roomService).deleteAllByFloorId(1L);
+        verify(nodeService).deleteAllByFloorId(1L);
         verify(floorRepository).delete(floor);
     }
 
@@ -309,19 +267,20 @@ public class FloorServiceTest {
     void resetDatabase_ok() {
         floorService.resetDatabase();
 
-        verify(roomRepository).deleteAll();
-        verify(stairsRepository).deleteAll();
-        verify(nodeRepository).deleteAll();
+        verify(roomService).deleteAll();
+        verify(stairsService).deleteAll();
+        verify(nodeService).deleteAll();
         verify(floorRepository).deleteAll();
         verify(floorRepository).resetSequences();
     }
 
     @Test
     void resetDatabase_error() {
-        doThrow(new RuntimeException("DB error")).when(roomRepository).deleteAll();
+        doThrow(new RuntimeException("DB error")).when(roomService).deleteAll();
 
         assertThatThrownBy(() -> floorService.resetDatabase())
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Ошибка при сбросе базы данных");
     }
+
 }

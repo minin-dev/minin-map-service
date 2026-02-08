@@ -52,14 +52,12 @@ import java.util.stream.Collectors;
 public class FloorService {
 
     private final FloorMapper floorMapper;
-    private final RoomMapper roomMapper;
-    private final NodeMapper nodeMapper;
-    private final StairsMapper stairsMapper;
+
+    private final NodeService nodeService;
+    private final RoomService roomService;
+    private final StairsService stairsService;
 
     private final FloorRepository floorRepository;
-    private final RoomRepository roomRepository;
-    private final NodeRepository nodeRepository;
-    private final StairsRepository stairsRepository;
     private final BuildingRepository buildingRepository;
 
     public List<FloorShortDTO> getAllFloors() {
@@ -92,20 +90,9 @@ public class FloorService {
                 .orElseThrow(() -> new EntityNotFoundException("Здание с id " + id + " не найдено"));
         FloorShortDTO floor = floorMapper.toShortDto(floorEntity);
 
-        List<RoomDTO> rooms = roomRepository.findByFloorId(floor.getId())
-                .stream()
-                .map(roomMapper::toDto)
-                .toList();
-
-        List<StairsDTO> stairs = stairsRepository.findByFloorId(floor.getId())
-                .stream()
-                .map(stairsMapper::toDto)
-                .toList();
-
-        List<NodeDTO> nodes = nodeRepository.findByFloorId(floor.getId())
-                .stream()
-                .map(nodeMapper::toDto)
-                .toList();
+        List<RoomDTO> rooms = roomService.getRoomsByFloorId(floor.getId());
+        List<StairsDTO> stairs = stairsService.getStairsByFloorId(floor.getId());
+        List<NodeDTO> nodes = nodeService.getNodesByFloorId(floor.getId());
 
         return new FloorDTO(floor, rooms, stairs, nodes);
     }
@@ -115,20 +102,9 @@ public class FloorService {
                 .orElseThrow(() -> new EntityNotFoundException("Этаж не найден"));
         FloorShortDTO floor = floorMapper.toShortDto(floorEntity);
 
-        List<RoomDTO> rooms = roomRepository.findByFloorId(floor.getId())
-                .stream()
-                .map(roomMapper::toDto)
-                .toList();
-
-        List<StairsDTO> stairs = stairsRepository.findByFloorId(floor.getId())
-                .stream()
-                .map(stairsMapper::toDto)
-                .toList();
-
-        List<NodeDTO> nodes = nodeRepository.findByFloorId(floor.getId())
-                .stream()
-                .map(nodeMapper::toDto)
-                .toList();
+        List<RoomDTO> rooms = roomService.getRoomsByFloorId(floor.getId());
+        List<StairsDTO> stairs = stairsService.getStairsByFloorId(floor.getId());
+        List<NodeDTO> nodes = nodeService.getNodesByFloorId(floor.getId());
 
         return new FloorDTO(floor, rooms, stairs, nodes);
     }
@@ -142,109 +118,9 @@ public class FloorService {
         floor.setPoints(mapDTO.getFloor().getPoints());
         floor = floorRepository.save(floor);
 
-        List<GraphNode> existingNodes = nodeRepository.findByFloorId(floor.getId());
-        List<Room> existingRooms = roomRepository.findByFloorId(floor.getId());
-        List<Stairs> existingStairs = stairsRepository.findByFloorId(floor.getId());
-
-        Map<Long, GraphNode> existingNodesMap = existingNodes.stream()
-                .collect(Collectors.toMap(GraphNode::getId, n -> n));
-        Map<Long, Room> existingRoomsMap = existingRooms.stream()
-                .collect(Collectors.toMap(Room::getId, r -> r));
-        Map<Long, Stairs> existingStairsMap = existingStairs.stream()
-                .collect(Collectors.toMap(Stairs::getId, s -> s));
-
-        Map<Long, Long> nodeIdMapping = new HashMap<>();
-
-        List<GraphNode> updatedNodes = new ArrayList<>();
-        for (NodeDTO nodeDTO : mapDTO.getNodes()) {
-            GraphNode node;
-            if (nodeDTO.getId() != null && existingNodesMap.containsKey(nodeDTO.getId())) {
-                node = existingNodesMap.get(nodeDTO.getId());
-                node.setPos(nodeDTO.getPos());
-                existingNodesMap.remove(nodeDTO.getId());
-            } else {
-                node = new GraphNode();
-                node.setPos(nodeDTO.getPos());
-                node.setFloor(floor);
-            }
-
-            node = nodeRepository.save(node);
-
-            Long oldId = nodeDTO.getId() != null ? nodeDTO.getId() : -node.getId();
-            nodeIdMapping.put(oldId, node.getId());
-            updatedNodes.add(node);
-        }
-
-        nodeRepository.deleteAll(existingNodesMap.values());
-
-        for (int i = 0; i < mapDTO.getNodes().size(); i++) {
-            NodeDTO nodeDTO = mapDTO.getNodes().get(i);
-            GraphNode node = updatedNodes.get(i);
-
-            if (nodeDTO.getNeighbors() != null) {
-                Long[] newNeighbors = Arrays.stream(nodeDTO.getNeighbors())
-                        .map(n -> nodeIdMapping.getOrDefault(n, n))
-                        .toArray(Long[]::new);
-                node.setNeighbors(newNeighbors);
-                nodeRepository.save(node);
-            }
-        }
-
-        Map<String, Room> roomsByName = existingRooms.stream()
-                .collect(Collectors.toMap(Room::getName, r -> r, (r1, r2) -> r1));
-
-        for (RoomDTO roomDTO : mapDTO.getRooms()) {
-            Room room;
-            if (roomDTO.getId() != null && existingRoomsMap.containsKey(roomDTO.getId())) {
-                room = existingRoomsMap.get(roomDTO.getId());
-                existingRoomsMap.remove(roomDTO.getId());
-            } else if (roomDTO.getName() != null && roomsByName.containsKey(roomDTO.getName())) {
-                room = roomsByName.get(roomDTO.getName());
-                existingRoomsMap.remove(room.getId());
-            } else {
-                room = new Room();
-            }
-
-            room.setName(roomDTO.getName());
-            room.setFloor(floor);
-            room.setPoints(roomDTO.getPoints());
-
-            if (roomDTO.getNodeId() != null) {
-                Long mappedNodeId = nodeIdMapping.getOrDefault(roomDTO.getNodeId(), roomDTO.getNodeId());
-                GraphNode node = nodeRepository.findById(mappedNodeId)
-                        .orElseThrow(() -> new EntityNotFoundException("GraphNode с id " + mappedNodeId + " не найден"));
-                room.setNode(node);
-            }
-
-            roomRepository.save(room);
-        }
-
-        roomRepository.deleteAll(existingRoomsMap.values());
-
-        for (StairsDTO stairsDTO : mapDTO.getStairs()) {
-            Stairs stairs;
-            if (stairsDTO.getId() != null && existingStairsMap.containsKey(stairsDTO.getId())) {
-                stairs = existingStairsMap.get(stairsDTO.getId());
-                existingStairsMap.remove(stairsDTO.getId());
-            } else {
-                stairs = new Stairs();
-            }
-
-            stairs.setFloor(floor);
-            stairs.setPoints(stairsDTO.getPoints());
-            stairs.setStairs(stairsDTO.getStairs());
-
-            if (stairsDTO.getNodeId() != null) {
-                Long mappedNodeId = nodeIdMapping.getOrDefault(stairsDTO.getNodeId(), stairsDTO.getNodeId());
-                GraphNode node = new GraphNode();
-                node.setId(mappedNodeId);
-                stairs.setNode(node);
-            }
-
-            stairsRepository.save(stairs);
-        }
-
-        stairsRepository.deleteAll(existingStairsMap.values());
+        Map<Long, Long> nodeIdMapping = nodeService.updateNodesForFloor(floor, mapDTO.getNodes());
+        roomService.updateRoomsForFloor(floor, mapDTO.getRooms(), nodeIdMapping);
+        stairsService.updateStairsForFloor(floor, mapDTO.getStairs(), nodeIdMapping);
 
         return getFloorDataByBuildingIdAndNumber(buildingId, number);
     }
@@ -264,49 +140,9 @@ public class FloorService {
         floor.setPoints(mapDTO.getFloor().getPoints());
         floor = floorRepository.save(floor);
 
-        Map<Long, Long> nodeIdMapping = new HashMap<>();
-
-        for (NodeDTO nodeDTO : mapDTO.getNodes()) {
-            GraphNode node = new GraphNode();
-            node.setPos(nodeDTO.getPos());
-            node.setFloor(floor);
-            node = nodeRepository.save(node);
-
-            Long oldId = nodeDTO.getId() != null ? nodeDTO.getId() : -node.getId();
-            nodeIdMapping.put(oldId, node.getId());
-        }
-
-        for (RoomDTO roomDTO : mapDTO.getRooms()) {
-            Room room = new Room();
-            room.setName(roomDTO.getName());
-            room.setFloor(floor);
-            room.setPoints(roomDTO.getPoints());
-
-            if (roomDTO.getNodeId() != null) {
-                Long mappedNodeId = nodeIdMapping.getOrDefault(roomDTO.getNodeId(), roomDTO.getNodeId());
-                GraphNode node = new GraphNode();
-                node.setId(mappedNodeId);
-                room.setNode(node);
-            }
-
-            roomRepository.save(room);
-        }
-
-        for (StairsDTO stairsDTO : mapDTO.getStairs()) {
-            Stairs stairs = new Stairs();
-            stairs.setFloor(floor);
-            stairs.setPoints(stairsDTO.getPoints());
-            stairs.setStairs(stairsDTO.getStairs());
-
-            if (stairsDTO.getNodeId() != null) {
-                Long mappedNodeId = nodeIdMapping.getOrDefault(stairsDTO.getNodeId(), stairsDTO.getNodeId());
-                GraphNode node = new GraphNode();
-                node.setId(mappedNodeId);
-                stairs.setNode(node);
-            }
-
-            stairsRepository.save(stairs);
-        }
+        Map<Long, Long> nodeIdMapping = nodeService.createNodesForFloor(floor, mapDTO.getNodes());
+        roomService.createRoomsForFloor(floor, mapDTO.getRooms(), nodeIdMapping);
+        stairsService.createStairsForFloor(floor, mapDTO.getStairs(), nodeIdMapping);
 
         return getFloorDataByBuildingIdAndNumber(buildingId, number);
     }
@@ -317,9 +153,9 @@ public class FloorService {
                 .orElseThrow(() -> new EntityNotFoundException("Этаж с номером " + number + " в здании " + buildingId + " не найден"));
 
         try {
-            stairsRepository.deleteAllByFloorId(floor.getId());
-            roomRepository.deleteAllByFloorId(floor.getId());
-            nodeRepository.deleteAllByFloorId(floor.getId());
+            stairsService.deleteAllByFloorId(floor.getId());
+            roomService.deleteAllByFloorId(floor.getId());
+            nodeService.deleteAllByFloorId(floor.getId());
             floorRepository.delete(floor);
         } catch (OptimisticLockException e) {
             throw new RuntimeException("Ошибка при удалении этажа: " + e.getMessage());
@@ -329,9 +165,9 @@ public class FloorService {
     @Transactional
     public void resetDatabase() {
         try {
-            roomRepository.deleteAll();
-            stairsRepository.deleteAll();
-            nodeRepository.deleteAll();
+            roomService.deleteAll();
+            stairsService.deleteAll();
+            nodeService.deleteAll();
             floorRepository.deleteAll();
             buildingRepository.deleteAll();
 

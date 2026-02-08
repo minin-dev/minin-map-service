@@ -25,6 +25,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mininuniver.interactiveMap.dto.map.RoomDTO;
 import org.mininuniver.interactiveMap.mapper.RoomMapper;
 import org.mininuniver.interactiveMap.model.Room;
+import org.mininuniver.interactiveMap.repository.NodeRepository;
 import org.mininuniver.interactiveMap.repository.RoomRepository;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -42,6 +43,9 @@ public class RoomServiceTest {
 
     @Mock
     private RoomRepository roomRepository;
+
+    @Mock
+    private NodeRepository nodeRepository;
 
     @Mock
     private RoomMapper roomMapper;
