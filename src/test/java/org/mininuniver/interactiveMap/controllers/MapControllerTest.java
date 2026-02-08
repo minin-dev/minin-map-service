@@ -102,40 +102,83 @@ public class MapControllerTest {
     }
 
     @Test
-    void getFloorByNumber_ok() {
-        when(floorService.getFloorDataByBuildingIdAndNumber(1L, 1)).thenReturn(mapDTO);
+    void getFloorById_ok() {
+        when(floorService.getFloorById(1L)).thenReturn(mapDTO);
 
-        FloorDTO result = mapController.getFloorByBuildingAndNumber(1L, 1);
+        FloorDTO result = mapController.getFloorById(1L);
 
         assertThat(result).isEqualTo(mapDTO);
-        verify(floorService).getFloorDataByBuildingIdAndNumber(1L, 1);
+        verify(floorService).getFloorById(1L);
     }
 
     @Test
-    void getAllFloors_ok() {
+    void searchFloors_ok() {
         FloorShortDTO floor2 = new FloorShortDTO();
         floor2.setId(2L);
         floor2.setNumber(2);
         floor2.setName("Второй этаж");
 
         List<FloorShortDTO> floors = List.of(floorShortDTO, floor2);
-        when(floorService.getFloorsByBuildingId(1L)).thenReturn(floors);
+        when(floorService.searchFloors(1L)).thenReturn(floors);
 
-        List<FloorShortDTO> result = mapController.getFloorsByBuilding(1L);
+        List<FloorShortDTO> result = mapController.searchFloors(1L);
 
         assertThat(result).hasSize(2);
-        verify(floorService).getFloorsByBuildingId(1L);
+        verify(floorService).searchFloors(1L);
     }
 
     @Test
-    void getRoomByName_ok() {
-        when(roomService.getRoomByName("A101")).thenReturn(roomDTO);
+    void searchRoomsByBuildingAndName_ok() {
+        when(roomService.searchRooms(1L, null, "A101")).thenReturn(List.of(roomDTO));
 
-        RoomDTO result = mapController.getRoomByName("A101");
+        List<RoomDTO> result = mapController.searchRooms(1L, null, "A101");
 
-        assertThat(result).isEqualTo(roomDTO);
-        assertThat(result.getName()).isEqualTo("A101");
-        verify(roomService).getRoomByName("A101");
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getName()).isEqualTo("A101");
+        verify(roomService).searchRooms(1L, null, "A101");
+    }
+
+    @Test
+    void searchRoomsByBuildingAndFloorAndName_ok() {
+        when(roomService.searchRooms(1L, 1, "A101")).thenReturn(List.of(roomDTO));
+
+        List<RoomDTO> result = mapController.searchRooms(1L, 1, "A101");
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getName()).isEqualTo("A101");
+        verify(roomService).searchRooms(1L, 1, "A101");
+    }
+
+    @Test
+    void searchRoomsByBuilding_ok() {
+        RoomDTO room2 = new RoomDTO();
+        room2.setId(2L);
+        room2.setName("A102");
+        room2.setFloorId(1L);
+
+        List<RoomDTO> rooms = List.of(roomDTO, room2);
+        when(roomService.searchRooms(1L, null, null)).thenReturn(rooms);
+
+        List<RoomDTO> result = mapController.searchRooms(1L, null, null);
+
+        assertThat(result).hasSize(2);
+        verify(roomService).searchRooms(1L, null, null);
+    }
+
+    @Test
+    void searchRoomsByBuildingAndFloor_ok() {
+        RoomDTO room2 = new RoomDTO();
+        room2.setId(2L);
+        room2.setName("A102");
+        room2.setFloorId(1L);
+
+        List<RoomDTO> rooms = List.of(roomDTO, room2);
+        when(roomService.searchRooms(1L, 1, null)).thenReturn(rooms);
+
+        List<RoomDTO> result = mapController.searchRooms(1L, 1, null);
+
+        assertThat(result).hasSize(2);
+        verify(roomService).searchRooms(1L, 1, null);
     }
 
     @Test
@@ -149,18 +192,18 @@ public class MapControllerTest {
     }
 
     @Test
-    void getAllRooms_ok() {
+    void searchAllRooms_ok() {
         RoomDTO room2 = new RoomDTO();
         room2.setId(2L);
         room2.setName("A102");
 
         List<RoomDTO> rooms = List.of(roomDTO, room2);
-        when(roomService.getAllRooms()).thenReturn(rooms);
+        when(roomService.searchRooms(null, null, null)).thenReturn(rooms);
 
-        List<RoomDTO> result = mapController.getAllRooms();
+        List<RoomDTO> result = mapController.searchRooms(null, null, null);
 
         assertThat(result).hasSize(2);
-        verify(roomService).getAllRooms();
+        verify(roomService).searchRooms(null, null, null);
     }
 
     @Test
@@ -174,7 +217,7 @@ public class MapControllerTest {
     }
 
     @Test
-    void getAllNodes_ok() {
+    void searchNodes_ok() {
         NodeDTO node2 = new NodeDTO();
         node2.setId(2L);
         node2.setPos(Map.of("x", 30, "y", 40));
@@ -182,7 +225,7 @@ public class MapControllerTest {
         List<NodeDTO> nodes = List.of(nodeDTO, node2);
         when(nodeService.getAllNodes()).thenReturn(nodes);
 
-        List<NodeDTO> result = mapController.getAllNodes();
+        List<NodeDTO> result = mapController.searchNodes();
 
         assertThat(result).hasSize(2);
         verify(nodeService).getAllNodes();

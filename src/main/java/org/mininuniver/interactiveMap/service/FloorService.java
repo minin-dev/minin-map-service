@@ -70,6 +70,13 @@ public class FloorService {
                 .toList();
     }
 
+    public List<FloorShortDTO> searchFloors(Long buildingId) {
+        if (buildingId != null) {
+            return getFloorsByBuildingId(buildingId);
+        }
+        return getAllFloors();
+    }
+
     public List<FloorShortDTO> getFloorsByBuildingId(Long buildingId) {
         Building building = buildingRepository.findById(buildingId)
                 .orElseThrow(() -> new EntityNotFoundException("Здание с id " + buildingId + " не найдено"));
@@ -78,6 +85,29 @@ public class FloorService {
                 .sorted(Comparator.comparing(Floor::getNumber))
                 .map(floorMapper::toShortDto)
                 .toList();
+    }
+
+    public FloorDTO getFloorById(Long id) {
+        Floor floorEntity = floorRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Здание с id " + id + " не найдено"));
+        FloorShortDTO floor = floorMapper.toShortDto(floorEntity);
+
+        List<RoomDTO> rooms = roomRepository.findByFloorId(floor.getId())
+                .stream()
+                .map(roomMapper::toDto)
+                .toList();
+
+        List<StairsDTO> stairs = stairsRepository.findByFloorId(floor.getId())
+                .stream()
+                .map(stairsMapper::toDto)
+                .toList();
+
+        List<NodeDTO> nodes = nodeRepository.findByFloorId(floor.getId())
+                .stream()
+                .map(nodeMapper::toDto)
+                .toList();
+
+        return new FloorDTO(floor, rooms, stairs, nodes);
     }
 
     public FloorDTO getFloorDataByBuildingIdAndNumber(Long buildingId, int number) {

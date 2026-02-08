@@ -25,7 +25,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.mininuniver.interactiveMap.dto.map.FloorDTO;
 import org.mininuniver.interactiveMap.dto.map.FloorShortDTO;
@@ -54,15 +53,15 @@ public class MapController {
 
     // --- Building Endpoints ---
 
-    @Operation(summary = "Получить все здания")
+    @Operation(summary = "Получить все здания (поиск)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Здания найдены",
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = BuildingShortDTO.class))),
             @ApiResponse(responseCode = "500", description = "Ошибка сервера", content = @Content)
     })
-    @GetMapping("/buildings")
-    public List<BuildingShortDTO> getAllBuildings() {
+    @GetMapping("/buildings/search")
+    public List<BuildingShortDTO> searchBuildings() {
         return buildingService.getAllBuildings();
     }
 
@@ -81,46 +80,45 @@ public class MapController {
 
     // --- Floor Endpoints ---
 
-    @Operation(summary = "Получить данные этажа по номеру и id здания")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Этаж найден",
-                content = @Content(mediaType = "application/json",
-                schema = @Schema(implementation = FloorDTO.class))),
-            @ApiResponse(responseCode = "403", description = "Ошибка запроса", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Этаж не найден", content = @Content),
-            @ApiResponse(responseCode = "500", description = "Ошибка сервера", content = @Content)
-    })
-    @GetMapping("/buildings/{buildingId}/floors/{number}")
-    public FloorDTO getFloorByBuildingAndNumber(@PathVariable Long buildingId, @PathVariable @Min(0) int number) {
-        return floorService.getFloorDataByBuildingIdAndNumber(buildingId, number);
-    }
-
-    @Operation(summary = "Получить все объекты этажей здания (без Points)")
+    @Operation(summary = "Поиск этажей")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Этажи найдены",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = FloorShortDTO.class))),
-            @ApiResponse(responseCode = "403", description = "Ошибка запроса", content = @Content),
             @ApiResponse(responseCode = "500", description = "Ошибка сервера", content = @Content)
     })
-    @GetMapping("/buildings/{buildingId}/floors")
-    public List<FloorShortDTO> getFloorsByBuilding(@PathVariable Long buildingId) {
-        return floorService.getFloorsByBuildingId(buildingId);
+    @GetMapping("/floors/search")
+    public List<FloorShortDTO> searchFloors(@RequestParam(required = false) Long buildingId) {
+        return floorService.searchFloors(buildingId);
+    }
+
+    @Operation(summary = "Получить данные этажа по id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Этаж найден",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = FloorDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Этаж не найден", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Ошибка сервера", content = @Content)
+    })
+    @GetMapping("/floors/{id}")
+    public FloorDTO getFloorById(@PathVariable Long id) {
+        return floorService.getFloorById(id);
     }
 
     // --- Room Endpoints ---
 
-    @Operation(summary = "Получить комнату по имени")
+    @Operation(summary = "Поиск комнат")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Комната найдена",
-                content = @Content(mediaType = "application/json",
-                schema = @Schema(implementation = RoomDTO.class))),
-            @ApiResponse(responseCode = "403", description = "Ошибка запроса", content = @Content),
+            @ApiResponse(responseCode = "200", description = "Комнаты найдены",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = RoomDTO.class))),
             @ApiResponse(responseCode = "500", description = "Ошибка сервера", content = @Content)
     })
-    @GetMapping("/rooms/name/{name}")
-    public RoomDTO getRoomByName(@PathVariable String name) {
-        return roomService.getRoomByName(name);
+    @GetMapping("/rooms/search")
+    public List<RoomDTO> searchRooms(@RequestParam(required = false) Long buildingId,
+                                     @RequestParam(required = false) Integer floor,
+                                     @RequestParam(required = false) String name) {
+        return roomService.searchRooms(buildingId, floor, name);
     }
 
     @Operation(summary = "Получить комнату по id")
@@ -136,31 +134,17 @@ public class MapController {
         return roomService.getRoomById(id);
     }
 
-    @Operation(summary = "Получить все комнаты")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Комнаты найдены",
-                content = @Content(mediaType = "application/json",
-                schema = @Schema(implementation = RoomDTO.class))),
-            @ApiResponse(responseCode = "403", description = "Ошибка запроса", content = @Content),
-            @ApiResponse(responseCode = "500", description = "Ошибка сервера", content = @Content)
-    })
-    @GetMapping("/rooms")
-    public List<RoomDTO> getAllRooms() {
-        return roomService.getAllRooms();
-    }
-
     // --- Node Endpoints ---
 
-    @Operation(summary = "Получить все узлы")
+    @Operation(summary = "Получить все узлы (поиск)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Узлы найдены",
                 content = @Content(mediaType = "application/json",
                 schema = @Schema(implementation = NodeDTO.class))),
-            @ApiResponse(responseCode = "403", description = "Ошибка запроса", content = @Content),
             @ApiResponse(responseCode = "500", description = "Ошибка сервера", content = @Content)
     })
-    @GetMapping("/nodes")
-    public List<NodeDTO> getAllNodes() {
+    @GetMapping("/nodes/search")
+    public List<NodeDTO> searchNodes() {
         return nodeService.getAllNodes();
     }
 

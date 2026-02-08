@@ -27,7 +27,6 @@ import org.mininuniver.interactiveMap.mapper.RoomMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -37,15 +36,21 @@ public class RoomService {
     private final RoomRepository roomRepository;
 
     public RoomDTO getRoomByFloorIdAndName(Long floorId, String name) {
-        return Optional.ofNullable(roomRepository.findByFloorIdAndName(floorId, name))
+        return roomRepository.findByFloorIdAndName(floorId, name)
                 .map(roomMapper::toDto)
                 .orElseThrow(() -> new EntityNotFoundException("Комната с именем '" + name + "' на этаже с ID " + floorId + " не найдена"));
     }
 
-    public RoomDTO getRoomByName(String name) {
-        return roomRepository.findByName(name)
+    public RoomDTO getRoomByBuildingIdAndName(Long buildingId, String name) {
+        return roomRepository.findByFloor_Building_IdAndName(buildingId, name)
                 .map(roomMapper::toDto)
-                .orElseThrow(() -> new EntityNotFoundException("Комната с именем '" + name + "' не найдена"));
+                .orElseThrow(() -> new EntityNotFoundException("Комната с именем '" + name + "' не найдена в здании"));
+    }
+
+    public RoomDTO getRoomByBuildingIdAndFloorNumberAndName(Long buildingId, int floorNumber, String name) {
+        return roomRepository.findByFloor_Building_IdAndFloor_NumberAndName(buildingId, floorNumber, name)
+                .map(roomMapper::toDto)
+                .orElseThrow(() -> new EntityNotFoundException("Комната с именем '" + name + "' не найдена на этаже " + floorNumber + " в здании " + buildingId));
     }
 
     public RoomDTO getRoomById(Long id) {
@@ -70,5 +75,27 @@ public class RoomService {
         return roomRepository.findByFloor_Building_IdAndFloor_Number(buildingId, floorNumber).stream()
                 .map(roomMapper::toDto)
                 .toList();
+    }
+
+    public List<RoomDTO> searchRooms(Long buildingId, Integer floor, String name) {
+        if (buildingId != null && floor != null && name != null) {
+            return roomRepository.findByFloor_Building_IdAndFloor_NumberAndName(buildingId, floor, name)
+                    .map(roomMapper::toDto)
+                    .map(List::of)
+                    .orElse(List.of());
+        }
+        if (buildingId != null && floor != null) {
+            return getAllRoomsByBuildingIdAndFloorNumber(buildingId, floor);
+        }
+        if (buildingId != null && name != null) {
+            return roomRepository.findByFloor_Building_IdAndName(buildingId, name)
+                    .map(roomMapper::toDto)
+                    .map(List::of)
+                    .orElse(List.of());
+        }
+        if (buildingId != null) {
+            return getAllRoomsByBuildingId(buildingId);
+        }
+        return getAllRooms();
     }
 }

@@ -28,7 +28,9 @@ import java.util.Optional;
 
 @Repository
 public interface RoomRepository extends JpaRepository<Room, Long> {
-    Room findByFloorIdAndName(Long buildingId, String name);
+    Optional<Room> findByFloor_Building_IdAndName(Long buildingId, String name);
+    Optional<Room> findByFloorIdAndName(Long floorId, String name);
+    Optional<Room> findByFloor_Building_IdAndFloor_NumberAndName(Long buildingId, int floorNumber, String name);
     Optional<Room> findByName(String name);
     List<Room> findByFloorId(Long floorId);
     List<Room> findAllByFloorId(Long floorId);

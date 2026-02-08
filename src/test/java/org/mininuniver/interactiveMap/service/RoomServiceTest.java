@@ -50,7 +50,7 @@ public class RoomServiceTest {
     private RoomService roomService;
 
     @Test
-    void getRoomByName_ok() {
+    void getRoomByBuildingIdAndName_ok() {
         Room room = new Room();
         room.setId(0L);
         room.setName("A101");
@@ -59,28 +59,102 @@ public class RoomServiceTest {
         roomDTO.setId(0L);
         roomDTO.setName("A101");
 
-        when(roomRepository.findByName("A101"))
+        when(roomRepository.findByFloor_Building_IdAndName(1L, "A101"))
                 .thenReturn(Optional.of(room));
         when(roomMapper.toDto(room))
                 .thenReturn(roomDTO);
 
-        var result = roomService.getRoomByName("A101");
+        var result = roomService.getRoomByBuildingIdAndName(1L, "A101");
 
         assertThat(result).isSameAs(roomDTO);
-        verify(roomRepository).findByName("A101");
+        verify(roomRepository).findByFloor_Building_IdAndName(1L, "A101");
         verify(roomMapper).toDto(room);
     }
 
     @Test
-    void getRoomByName_notFound() {
-        when(roomRepository.findByName("A101")).thenReturn(Optional.empty());
+    void getRoomByBuildingIdAndName_notFound() {
+        when(roomRepository.findByFloor_Building_IdAndName(1L, "A101")).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> roomService.getRoomByName("A101"))
+        assertThatThrownBy(() -> roomService.getRoomByBuildingIdAndName(1L, "A101"))
                 .isInstanceOf(EntityNotFoundException.class)
                 .hasMessageContaining("A101");
 
-        verify(roomRepository).findByName("A101");
+        verify(roomRepository).findByFloor_Building_IdAndName(1L, "A101");
         verifyNoInteractions(roomMapper);
+    }
+
+    @Test
+    void getRoomByFloorIdAndName_ok() {
+        Room room = new Room();
+        room.setId(0L);
+        room.setName("A101");
+
+        RoomDTO roomDTO = new RoomDTO();
+        roomDTO.setId(0L);
+        roomDTO.setName("A101");
+
+        when(roomRepository.findByFloorIdAndName(2L, "A101"))
+                .thenReturn(Optional.of(room));
+        when(roomMapper.toDto(room))
+                .thenReturn(roomDTO);
+
+        var result = roomService.getRoomByFloorIdAndName(2L, "A101");
+
+        assertThat(result).isSameAs(roomDTO);
+        verify(roomRepository).findByFloorIdAndName(2L, "A101");
+        verify(roomMapper).toDto(room);
+    }
+
+    @Test
+    void getRoomByBuildingIdAndFloorNumberAndName_ok() {
+        Room room = new Room();
+        room.setId(0L);
+        room.setName("A101");
+
+        RoomDTO roomDTO = new RoomDTO();
+        roomDTO.setId(0L);
+        roomDTO.setName("A101");
+
+        when(roomRepository.findByFloor_Building_IdAndFloor_NumberAndName(1L, 1, "A101"))
+                .thenReturn(Optional.of(room));
+        when(roomMapper.toDto(room))
+                .thenReturn(roomDTO);
+
+        var result = roomService.getRoomByBuildingIdAndFloorNumberAndName(1L, 1, "A101");
+
+        assertThat(result).isSameAs(roomDTO);
+        verify(roomRepository).findByFloor_Building_IdAndFloor_NumberAndName(1L, 1, "A101");
+        verify(roomMapper).toDto(room);
+    }
+
+    @Test
+    void getAllRoomsByBuildingId_ok() {
+        var rooms = List.of(new Room(), new Room());
+        var dtos = List.of(new RoomDTO(), new RoomDTO());
+
+        when(roomRepository.findByFloor_Building_Id(1L)).thenReturn(rooms);
+        when(roomMapper.toDto(rooms.get(0))).thenReturn(dtos.get(0));
+        when(roomMapper.toDto(rooms.get(1))).thenReturn(dtos.get(1));
+
+        var result = roomService.getAllRoomsByBuildingId(1L);
+
+        assertThat(result).containsExactlyElementsOf(dtos);
+        verify(roomRepository).findByFloor_Building_Id(1L);
+    }
+
+    @Test
+    void getAllRoomsByBuildingIdAndFloorNumber_ok() {
+        var rooms = List.of(new Room(), new Room());
+        var dtos = List.of(new RoomDTO(), new RoomDTO());
+
+        when(roomRepository.findByFloor_Building_IdAndFloor_Number(1L, 1)).thenReturn(rooms);
+        when(roomMapper.toDto(rooms.get(0))).thenReturn(dtos.get(0));
+        when(roomMapper.toDto(rooms.get(1))).thenReturn(dtos.get(1));
+
+        var result = roomService.getAllRoomsByBuildingIdAndFloorNumber(1L, 1);
+
+        assertThat(result).containsExactlyElementsOf(dtos);
+        verify(roomRepository).findByFloor_Building_IdAndFloor_Number(1L, 1);
     }
 
     @Test
