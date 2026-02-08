@@ -27,6 +27,7 @@ import org.mininuniver.interactiveMap.mapper.RoomMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -35,12 +36,39 @@ public class RoomService {
     private final RoomMapper roomMapper;
     private final RoomRepository roomRepository;
 
+    public RoomDTO getRoomByFloorIdAndName(Long floorId, String name) {
+        return Optional.ofNullable(roomRepository.findByFloorIdAndName(floorId, name))
+                .map(roomMapper::toDto)
+                .orElseThrow(() -> new EntityNotFoundException("Комната с именем '" + name + "' на этаже с ID " + floorId + " не найдена"));
+    }
+
     public RoomDTO getRoomByName(String name) {
-        return roomMapper.toDto(roomRepository.findByName(name)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Помещение %s не найдено", name))));
+        return roomRepository.findByName(name)
+                .map(roomMapper::toDto)
+                .orElseThrow(() -> new EntityNotFoundException("Комната с именем '" + name + "' не найдена"));
+    }
+
+    public RoomDTO getRoomById(Long id) {
+        return roomRepository.findById(id)
+                .map(roomMapper::toDto)
+                .orElseThrow(() -> new EntityNotFoundException("Комната с id " + id + " не найдена"));
     }
 
     public List<RoomDTO> getAllRooms() {
-        return roomMapper.toDtoList(roomRepository.findAll());
+        return roomRepository.findAll().stream()
+                .map(roomMapper::toDto)
+                .toList();
+    }
+
+    public List<RoomDTO> getAllRoomsByBuildingId(Long buildingId) {
+        return roomRepository.findByFloor_Building_Id(buildingId).stream()
+                .map(roomMapper::toDto)
+                .toList();
+    }
+
+    public List<RoomDTO> getAllRoomsByBuildingIdAndFloorNumber(Long buildingId, int floorNumber) {
+        return roomRepository.findByFloor_Building_IdAndFloor_Number(buildingId, floorNumber).stream()
+                .map(roomMapper::toDto)
+                .toList();
     }
 }

@@ -148,7 +148,7 @@ public class MapControllerWebMvcTest {
 
         when(roomService.getRoomByName("A101")).thenReturn(roomDTO);
 
-        mockMvc.perform(get("/api/v1/map/rooms/A101"))
+        mockMvc.perform(get("/api/v1/map/rooms/name/A101"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.name").value("A101"));
@@ -159,7 +159,7 @@ public class MapControllerWebMvcTest {
     void getRoomByName_notFound() throws Exception {
         when(roomService.getRoomByName("unknown")).thenThrow(new EntityNotFoundException("Помещение unknown не найдено"));
 
-        mockMvc.perform(get("/api/v1/map/rooms/unknown"))
+        mockMvc.perform(get("/api/v1/map/rooms/name/unknown"))
                 .andExpect(status().isNotFound());
     }
 
@@ -180,6 +180,31 @@ public class MapControllerWebMvcTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(2));
+    }
+
+    @Test
+    @WithMockUser
+    void getNodeById_ok() throws Exception {
+        NodeDTO nodeDTO = new NodeDTO();
+        nodeDTO.setId(1L);
+        nodeDTO.setFloorId(1L);
+        nodeDTO.setPos(Map.of("x", 10, "y", 20));
+
+        when(nodeService.getNodeById(1L)).thenReturn(nodeDTO);
+
+        mockMvc.perform(get("/api/v1/map/nodes/1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.pos.x").value(10));
+    }
+
+    @Test
+    @WithMockUser
+    void getNodeById_notFound() throws Exception {
+        when(nodeService.getNodeById(99L)).thenThrow(new EntityNotFoundException("Узел не найден"));
+
+        mockMvc.perform(get("/api/v1/map/nodes/99"))
+                .andExpect(status().isNotFound());
     }
 
     @Test

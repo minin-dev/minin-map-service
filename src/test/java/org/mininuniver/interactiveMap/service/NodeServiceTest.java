@@ -31,8 +31,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
+import jakarta.persistence.EntityNotFoundException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -47,6 +51,37 @@ public class NodeServiceTest {
 
     @InjectMocks
     private NodeService nodeService;
+
+    @Test
+    void getNodeById_ok() {
+        GraphNode node = new GraphNode();
+        node.setId(1L);
+        node.setPos(Map.of("x", 10, "y", 20));
+
+        NodeDTO nodeDTO = new NodeDTO();
+        nodeDTO.setId(1L);
+        nodeDTO.setPos(Map.of("x", 10, "y", 20));
+
+        when(nodeRepository.findById(1L)).thenReturn(Optional.of(node));
+        when(nodeMapper.toDto(node)).thenReturn(nodeDTO);
+
+        NodeDTO result = nodeService.getNodeById(1L);
+
+        assertThat(result).isSameAs(nodeDTO);
+        verify(nodeRepository).findById(1L);
+        verify(nodeMapper).toDto(node);
+    }
+
+    @Test
+    void getNodeById_notFound() {
+        when(nodeRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> nodeService.getNodeById(1L))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("1");
+
+        verify(nodeRepository).findById(1L);
+    }
 
     @Test
     void getAllNodes_ok() {

@@ -84,17 +84,52 @@ public class RoomServiceTest {
     }
 
     @Test
-    void getAllRooms_ok() {
-        var rooms = List.of(new Room(), new Room());
-        var dtos = List.of(new RoomDTO(), new RoomDTO());
+    void getRoomById_ok() {
+        Room room = new Room();
+        room.setId(1L);
+        room.setName("A101");
 
-        when(roomRepository.findAll()).thenReturn(rooms);
-        when(roomMapper.toDtoList(rooms)).thenReturn(dtos);
+        RoomDTO roomDTO = new RoomDTO();
+        roomDTO.setId(1L);
+        roomDTO.setName("A101");
 
-        var result = roomService.getAllRooms();
+        when(roomRepository.findById(1L))
+                .thenReturn(Optional.of(room));
+        when(roomMapper.toDto(room))
+                .thenReturn(roomDTO);
 
-        assertThat(result).isSameAs(dtos);
-        verify(roomRepository).findAll();
-        verify(roomMapper).toDtoList(rooms);
+        var result = roomService.getRoomById(1L);
+
+        assertThat(result).isSameAs(roomDTO);
+        verify(roomRepository).findById(1L);
+        verify(roomMapper).toDto(room);
     }
+
+    @Test
+    void getRoomById_notFound() {
+        when(roomRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> roomService.getRoomById(1L))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("1");
+
+        verify(roomRepository).findById(1L);
+    }
+
+    @Test
+        void getAllRooms_ok() {
+            var rooms = List.of(new Room(), new Room());
+            var dtos = List.of(new RoomDTO(), new RoomDTO());
+
+            when(roomRepository.findAll()).thenReturn(rooms);
+            when(roomMapper.toDto(rooms.get(0))).thenReturn(dtos.get(0));
+            when(roomMapper.toDto(rooms.get(1))).thenReturn(dtos.get(1));
+
+            var result = roomService.getAllRooms();
+
+            assertThat(result).containsExactlyElementsOf(dtos);
+            verify(roomRepository).findAll();
+            verify(roomMapper).toDto(rooms.get(0));
+            verify(roomMapper).toDto(rooms.get(1));
+        }
 }

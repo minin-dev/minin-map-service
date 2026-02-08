@@ -19,6 +19,7 @@
 
 package org.mininuniver.interactiveMap.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.mininuniver.interactiveMap.repository.NodeRepository;
 import org.mininuniver.interactiveMap.dto.map.NodeDTO;
@@ -33,6 +34,12 @@ public class NodeService {
 
     private final NodeMapper nodeMapper;
     private final NodeRepository nodeRepository;
+
+    public NodeDTO getNodeById(Long id) {
+        return nodeRepository.findById(id)
+                .map(nodeMapper::toDto)
+                .orElseThrow(() -> new EntityNotFoundException("Узел с id " + id + " не найден"));
+    }
 
     public List<NodeDTO> getAllNodes() {
         return nodeMapper.toDtoList(nodeRepository.findAll());

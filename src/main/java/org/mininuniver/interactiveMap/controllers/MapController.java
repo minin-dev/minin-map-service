@@ -33,8 +33,6 @@ import org.mininuniver.interactiveMap.dto.map.NodeDTO;
 import org.mininuniver.interactiveMap.dto.map.RoomDTO;
 import org.mininuniver.interactiveMap.dto.map.BuildingDTO;
 import org.mininuniver.interactiveMap.dto.map.BuildingShortDTO;
-import org.mininuniver.interactiveMap.model.GraphNode;
-import org.mininuniver.interactiveMap.model.Room;
 import org.mininuniver.interactiveMap.service.FloorService;
 import org.mininuniver.interactiveMap.service.NodeService;
 import org.mininuniver.interactiveMap.service.RoomService;
@@ -53,6 +51,8 @@ public class MapController {
     private final RoomService roomService;
     private final FloorService floorService;
     private final BuildingService buildingService;
+
+    // --- Building Endpoints ---
 
     @Operation(summary = "Получить все здания")
     @ApiResponses(value = {
@@ -78,6 +78,8 @@ public class MapController {
     public BuildingDTO getBuildingById(@PathVariable Long id) {
         return buildingService.getBuildingById(id);
     }
+
+    // --- Floor Endpoints ---
 
     @Operation(summary = "Получить данные этажа по номеру и id здания")
     @ApiResponses(value = {
@@ -106,24 +108,39 @@ public class MapController {
         return floorService.getFloorsByBuildingId(buildingId);
     }
 
+    // --- Room Endpoints ---
+
     @Operation(summary = "Получить комнату по имени")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Комната найдена",
                 content = @Content(mediaType = "application/json",
-                schema = @Schema(implementation = Room.class))),
+                schema = @Schema(implementation = RoomDTO.class))),
             @ApiResponse(responseCode = "403", description = "Ошибка запроса", content = @Content),
             @ApiResponse(responseCode = "500", description = "Ошибка сервера", content = @Content)
     })
-    @GetMapping("/rooms/{name}")
+    @GetMapping("/rooms/name/{name}")
     public RoomDTO getRoomByName(@PathVariable String name) {
         return roomService.getRoomByName(name);
+    }
+
+    @Operation(summary = "Получить комнату по id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Комната найдена",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = RoomDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Комната не найдена", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Ошибка сервера", content = @Content)
+    })
+    @GetMapping("/rooms/{id}")
+    public RoomDTO getRoomById(@PathVariable Long id) {
+        return roomService.getRoomById(id);
     }
 
     @Operation(summary = "Получить все комнаты")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Комнаты найдены",
                 content = @Content(mediaType = "application/json",
-                schema = @Schema(implementation = Room.class))),
+                schema = @Schema(implementation = RoomDTO.class))),
             @ApiResponse(responseCode = "403", description = "Ошибка запроса", content = @Content),
             @ApiResponse(responseCode = "500", description = "Ошибка сервера", content = @Content)
     })
@@ -132,17 +149,32 @@ public class MapController {
         return roomService.getAllRooms();
     }
 
+    // --- Node Endpoints ---
+
     @Operation(summary = "Получить все узлы")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Узлы найдены",
                 content = @Content(mediaType = "application/json",
-                schema = @Schema(implementation = GraphNode.class))),
+                schema = @Schema(implementation = NodeDTO.class))),
             @ApiResponse(responseCode = "403", description = "Ошибка запроса", content = @Content),
             @ApiResponse(responseCode = "500", description = "Ошибка сервера", content = @Content)
     })
     @GetMapping("/nodes")
     public List<NodeDTO> getAllNodes() {
         return nodeService.getAllNodes();
+    }
+
+    @Operation(summary = "Получить узел по id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Узел найден",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = NodeDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Узел не найден", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Ошибка сервера", content = @Content)
+    })
+    @GetMapping("/nodes/{id}")
+    public NodeDTO getNodeById(@PathVariable Long id) {
+        return nodeService.getNodeById(id);
     }
 
 }

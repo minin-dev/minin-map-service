@@ -28,11 +28,11 @@ import java.util.Optional;
 
 @Repository
 public interface RoomRepository extends JpaRepository<Room, Long> {
-
-    List<Room> findByFloorId(Long floorId);
-    List<Room> findAll();
+    Room findByFloorIdAndName(Long buildingId, String name);
     Optional<Room> findByName(String name);
-    Optional<Room> findById(Long id);
-
+    List<Room> findByFloorId(Long floorId);
+    List<Room> findAllByFloorId(Long floorId);
+    List<Room> findByFloor_Building_Id(Long buildingId);
+    List<Room> findByFloor_Building_IdAndFloor_Number(Long buildingId, int floorNumber);
     void deleteAllByFloorId(Long floorId);
 }

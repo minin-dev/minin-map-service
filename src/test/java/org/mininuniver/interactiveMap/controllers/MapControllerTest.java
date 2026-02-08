@@ -139,6 +139,16 @@ public class MapControllerTest {
     }
 
     @Test
+    void getRoomById_ok() {
+        when(roomService.getRoomById(1L)).thenReturn(roomDTO);
+
+        RoomDTO result = mapController.getRoomById(1L);
+
+        assertThat(result).isEqualTo(roomDTO);
+        verify(roomService).getRoomById(1L);
+    }
+
+    @Test
     void getAllRooms_ok() {
         RoomDTO room2 = new RoomDTO();
         room2.setId(2L);
@@ -151,6 +161,16 @@ public class MapControllerTest {
 
         assertThat(result).hasSize(2);
         verify(roomService).getAllRooms();
+    }
+
+    @Test
+    void getNodeById_ok() {
+        when(nodeService.getNodeById(1L)).thenReturn(nodeDTO);
+
+        NodeDTO result = mapController.getNodeById(1L);
+
+        assertThat(result).isEqualTo(nodeDTO);
+        verify(nodeService).getNodeById(1L);
     }
 
     @Test
