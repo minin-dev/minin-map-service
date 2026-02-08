@@ -180,7 +180,6 @@ public class FloorServiceTest {
         when(floorMapper.toShortDto(floor)).thenReturn(floorShortDTO);
 
         when(nodeService.createNodesForFloor(any(Floor.class), anyList())).thenReturn(new HashMap<>());
-        // roomService, stairsService return void
 
         FloorDTO result = floorService.createFloor(1L, 1, inputDTO);
 

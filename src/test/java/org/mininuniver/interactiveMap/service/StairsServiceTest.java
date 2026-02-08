@@ -142,13 +142,10 @@ class StairsServiceTest {
 
         stairsService.updateStairsForFloor(floor, List.of(updateDTO, newDTO), nodeIdMapping);
 
-        // existingStairs should be updated
         assertThat(existingStairs.getPoints()).isEqualTo(newPoints);
 
-        // should save existingStairs and new Stairs
         verify(stairsRepository, times(2)).save(any(Stairs.class));
 
-        // should delete nothing since existingStairs was used
         verify(stairsRepository).deleteAll(stairsCaptor.capture());
         assertThat(stairsCaptor.getValue()).isEmpty();
     }
@@ -163,7 +160,6 @@ class StairsServiceTest {
 
         when(stairsRepository.findByFloorId(floor.getId())).thenReturn(List.of(existingStairs));
 
-        // No DTOs provided, so existing should be deleted
         stairsService.updateStairsForFloor(floor, Collections.emptyList(), Map.of());
 
         verify(stairsRepository).deleteAll(stairsCaptor.capture());
