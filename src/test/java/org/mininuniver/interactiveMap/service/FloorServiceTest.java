@@ -262,24 +262,4 @@ public class FloorServiceTest {
                 .hasMessageContaining("не найден");
     }
 
-    @Test
-    void resetDatabase_ok() {
-        floorService.resetDatabase();
-
-        verify(roomService).deleteAll();
-        verify(stairsService).deleteAll();
-        verify(nodeService).deleteAll();
-        verify(floorRepository).deleteAll();
-        verify(floorRepository).resetSequences();
-    }
-
-    @Test
-    void resetDatabase_error() {
-        doThrow(new RuntimeException("DB error")).when(roomService).deleteAll();
-
-        assertThatThrownBy(() -> floorService.resetDatabase())
-                .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("Ошибка при сбросе базы данных");
-    }
-
 }

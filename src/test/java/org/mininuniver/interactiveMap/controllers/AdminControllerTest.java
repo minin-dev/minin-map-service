@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mininuniver.interactiveMap.dto.map.*;
 import org.mininuniver.interactiveMap.service.BuildingService;
+import org.mininuniver.interactiveMap.service.DBService;
 import org.mininuniver.interactiveMap.service.FloorService;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -43,6 +44,9 @@ public class AdminControllerTest {
 
     @Mock
     private BuildingService buildingService;
+
+    @Mock
+    private DBService dbService;
 
     @InjectMocks
     private AdminController adminController;
@@ -111,6 +115,6 @@ public class AdminControllerTest {
         var response = adminController.resetDatabase();
 
         assertThat(response.getStatusCode().value()).isEqualTo(204);
-        verify(floorService).resetDatabase();
+        verify(dbService).resetDatabase();
     }
 }

@@ -71,4 +71,10 @@ public class BuildingService {
         }
         buildingRepository.deleteById(id);
     }
+
+    @Transactional
+    public void deleteAll() {
+        buildingRepository.deleteAll();
+        buildingRepository.resetSequences();
+    }
 }

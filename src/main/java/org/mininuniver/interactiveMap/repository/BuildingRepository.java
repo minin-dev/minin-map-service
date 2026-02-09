@@ -21,6 +21,8 @@ package org.mininuniver.interactiveMap.repository;
 
 import org.mininuniver.interactiveMap.model.Building;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -28,4 +30,17 @@ import java.util.Optional;
 @Repository
 public interface BuildingRepository extends JpaRepository<Building, Long> {
     Optional<Building> findById(Long id);
+
+    @Modifying
+    @Query(value = "DO $$ DECLARE seq RECORD; " +
+            "BEGIN " +
+            "  FOR seq IN SELECT c.oid::regclass::text AS seqname " +
+            "             FROM pg_class c " +
+            "             JOIN pg_namespace n ON n.oid = c.relnamespace " +
+            "             WHERE c.relkind = 'S' AND n.nspname = 'public' " +
+            "  LOOP " +
+            "    EXECUTE 'ALTER SEQUENCE ' || seq.seqname || ' RESTART WITH 1'; " +
+            "  END LOOP; " +
+            "END $$;", nativeQuery = true)
+    void resetSequences();
 }

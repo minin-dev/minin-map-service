@@ -28,6 +28,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.mininuniver.interactiveMap.dto.map.FloorDTO;
 import org.mininuniver.interactiveMap.dto.map.BuildingShortDTO;
+import org.mininuniver.interactiveMap.service.DBService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.mininuniver.interactiveMap.service.FloorService;
@@ -41,6 +42,7 @@ public class AdminController {
 
     private final FloorService floorService;
     private final BuildingService buildingService;
+    private final DBService dbService;
 
     @Operation(summary = "Создать новое здание")
     @ApiResponses(value = {
@@ -111,7 +113,7 @@ public class AdminController {
     })
     @DeleteMapping("/reset-db")
     public ResponseEntity<Void> resetDatabase() {
-        floorService.resetDatabase();
+        dbService.resetDatabase();
         return ResponseEntity.noContent().build();
     }
 

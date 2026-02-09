@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.mininuniver.interactiveMap.dto.map.*;
 import org.mininuniver.interactiveMap.security.JwtUtil;
 import org.mininuniver.interactiveMap.service.BuildingService;
+import org.mininuniver.interactiveMap.service.DBService;
 import org.mininuniver.interactiveMap.service.FloorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -57,6 +58,9 @@ public class AdminControllerWebMvcTest {
 
     @MockitoBean
     private BuildingService buildingService;
+
+    @MockitoBean
+    private DBService dbService;
 
     @MockitoBean
     private JwtUtil jwtUtil;
@@ -148,13 +152,13 @@ public class AdminControllerWebMvcTest {
     @Test
     @WithMockUser(roles = "ADMIN")
     void resetDatabase_ok() throws Exception {
-        doNothing().when(floorService).resetDatabase();
+        doNothing().when(dbService).resetDatabase();
 
         mockMvc.perform(delete("/api/v1/admin/reset-db")
                         .with(csrf()))
                 .andExpect(status().isNoContent());
 
-        verify(floorService).resetDatabase();
+        verify(dbService).resetDatabase();
     }
 
     @Test

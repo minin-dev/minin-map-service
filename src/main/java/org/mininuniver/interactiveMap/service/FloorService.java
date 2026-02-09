@@ -26,25 +26,18 @@ import lombok.RequiredArgsConstructor;
 import org.mininuniver.interactiveMap.dto.map.FloorDTO;
 import org.mininuniver.interactiveMap.model.*;
 import org.mininuniver.interactiveMap.repository.FloorRepository;
-import org.mininuniver.interactiveMap.repository.NodeRepository;
-import org.mininuniver.interactiveMap.repository.RoomRepository;
-import org.mininuniver.interactiveMap.repository.StairsRepository;
 import org.mininuniver.interactiveMap.repository.BuildingRepository;
 import org.mininuniver.interactiveMap.dto.map.NodeDTO;
 import org.mininuniver.interactiveMap.dto.map.RoomDTO;
 import org.mininuniver.interactiveMap.dto.map.StairsDTO;
 import org.mininuniver.interactiveMap.dto.map.FloorShortDTO;
 import org.mininuniver.interactiveMap.mapper.FloorMapper;
-import org.mininuniver.interactiveMap.mapper.NodeMapper;
-import org.mininuniver.interactiveMap.mapper.RoomMapper;
-import org.mininuniver.interactiveMap.mapper.StairsMapper;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -163,18 +156,9 @@ public class FloorService {
     }
 
     @Transactional
-    public void resetDatabase() {
-        try {
-            roomService.deleteAll();
-            stairsService.deleteAll();
-            nodeService.deleteAll();
-            floorRepository.deleteAll();
-            buildingRepository.deleteAll();
-
-            floorRepository.resetSequences();
-        } catch (Exception e) {
-            throw new RuntimeException("Ошибка при сбросе базы данных: " + e.getMessage());
-        }
+    public void deleteAll() {
+        floorRepository.deleteAll();
+        floorRepository.resetSequences();
     }
 
 }
