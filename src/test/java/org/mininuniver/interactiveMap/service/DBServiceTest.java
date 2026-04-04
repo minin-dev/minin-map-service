@@ -1,11 +1,11 @@
 package org.mininuniver.interactiveMap.service;
 
-import org.mininuniver.interactiveMap.service.BuildingService;
-import org.mininuniver.interactiveMap.service.DBService;
-import org.mininuniver.interactiveMap.service.FloorService;
-import org.mininuniver.interactiveMap.service.NodeService;
-import org.mininuniver.interactiveMap.service.RoomService;
-import org.mininuniver.interactiveMap.service.StairsService;
+import org.mininuniver.interactiveMap.map.service.BuildingService;
+import org.mininuniver.interactiveMap.map.service.DBService;
+import org.mininuniver.interactiveMap.map.service.FloorService;
+import org.mininuniver.interactiveMap.map.service.NodeService;
+import org.mininuniver.interactiveMap.map.service.RoomService;
+import org.mininuniver.interactiveMap.map.service.StairsService;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

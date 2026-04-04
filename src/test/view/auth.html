@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Auth API Debug</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+<header>
+  <h1>Auth API Debug</h1>
+  <nav>
+    <a href="./index.html">Home</a>
+    <a href="./admin.html">Admin endpoints</a>
+    <a href="./map.html">Map endpoints</a>
+  </nav>
+</header>
+<main>
+  <section class="card">
+    <h2>Global settings</h2>
+    <div class="row">
+      <input id="baseUrl" type="text" placeholder="http://localhost:8080/api/v1" />
+      <input id="bearer" type="text" placeholder="Bearer token (optional in dev mode)" />
+      <button id="saveGlobal">Save</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>POST /auth/login</h2>
+    <textarea id="loginBody">{
+  "username": "admin",
+  "password": "your_secure_admin_password"
+}</textarea>
+    <div class="row"><button onclick="callLogin()">Send</button></div>
+    <pre id="loginOut"></pre>
+  </section>
+
+  <section class="card">
+    <h2>POST /auth/refresh</h2>
+    <textarea id="refreshBody">{
+  "refreshToken": "paste-refresh-token-here"
+}</textarea>
+    <div class="row"><button onclick="callRefresh()">Send</button></div>
+    <pre id="refreshOut"></pre>
+  </section>
+
+  <section class="card">
+    <h2>POST /auth/logout</h2>
+    <p class="small">Uses Authorization header if bearer token is set in global settings.</p>
+    <div class="row"><button onclick="callLogout()">Send</button></div>
+    <pre id="logoutOut"></pre>
+  </section>
+
+  <section class="card">
+    <h2>GET /auth/checkToken</h2>
+    <div class="row"><button onclick="callCheckToken()">Send</button></div>
+    <pre id="checkTokenOut"></pre>
+  </section>
+</main>
+
+<script src="./common.js"></script>
+<script>
+  window.DebugApi.setupGlobalControls();
+
+  function callLogin() {
+    window.DebugApi.sendRequest({
+      method: "POST",
+      path: "/auth/login",
+      bodyId: "loginBody",
+      outputId: "loginOut"
+    });
+  }
+
+  function callRefresh() {
+    window.DebugApi.sendRequest({
+      method: "POST",
+      path: "/auth/refresh",
+      bodyId: "refreshBody",
+      outputId: "refreshOut"
+    });
+  }
+
+  function callLogout() {
+    window.DebugApi.sendRequest({
+      method: "POST",
+      path: "/auth/logout",
+      outputId: "logoutOut"
+    });
+  }
+
+  function callCheckToken() {
+    window.DebugApi.sendRequest({
+      method: "GET",
+      path: "/auth/checkToken",
+      outputId: "checkTokenOut"
+    });
+  }
+</script>
+</body>
+</html>
+

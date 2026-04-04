@@ -23,11 +23,16 @@ import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mininuniver.interactiveMap.dto.map.*;
-import org.mininuniver.interactiveMap.mapper.FloorMapper;
-import org.mininuniver.interactiveMap.model.Floor;
-import org.mininuniver.interactiveMap.repository.FloorRepository;
-import org.mininuniver.interactiveMap.repository.BuildingRepository;
+import org.mininuniver.interactiveMap.map.dto.*;
+import org.mininuniver.interactiveMap.map.mapper.FloorMapper;
+import org.mininuniver.interactiveMap.map.model.Building;
+import org.mininuniver.interactiveMap.map.model.Floor;
+import org.mininuniver.interactiveMap.map.repository.FloorRepository;
+import org.mininuniver.interactiveMap.map.repository.BuildingRepository;
+import org.mininuniver.interactiveMap.map.service.FloorService;
+import org.mininuniver.interactiveMap.map.service.NodeService;
+import org.mininuniver.interactiveMap.map.service.RoomService;
+import org.mininuniver.interactiveMap.map.service.StairsService;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -174,7 +179,7 @@ public class FloorServiceTest {
 
         when(floorRepository.existsByBuildingIdAndNumber(1L, 1)).thenReturn(false);
         when(floorRepository.save(any(Floor.class))).thenReturn(floor);
-        when(buildingRepository.findById(1L)).thenReturn(Optional.of(new org.mininuniver.interactiveMap.model.Building()));
+        when(buildingRepository.findById(1L)).thenReturn(Optional.of(new Building()));
 
         when(floorRepository.findByBuildingIdAndNumber(1L, 1)).thenReturn(Optional.of(floor));
         when(floorMapper.toShortDto(floor)).thenReturn(floorShortDTO);

@@ -21,10 +21,11 @@ package org.mininuniver.interactiveMap.service;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mininuniver.interactiveMap.dto.map.NodeDTO;
-import org.mininuniver.interactiveMap.mapper.NodeMapper;
-import org.mininuniver.interactiveMap.model.GraphNode;
-import org.mininuniver.interactiveMap.repository.NodeRepository;
+import org.mininuniver.interactiveMap.map.dto.NodeDTO;
+import org.mininuniver.interactiveMap.map.mapper.NodeMapper;
+import org.mininuniver.interactiveMap.map.model.GraphNode;
+import org.mininuniver.interactiveMap.map.repository.NodeRepository;
+import org.mininuniver.interactiveMap.map.service.NodeService;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;

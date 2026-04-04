@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visual Map Debug</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+<header>
+  <h1>Visual Map Debug</h1>
+  <nav>
+    <a href="./index.html">Home</a>
+    <a href="./admin.html">Admin endpoints</a>
+    <a href="./auth.html">Auth endpoints</a>
+  </nav>
+</header>
+
+<main class="wide-main">
+  <section class="card">
+    <h2>Global settings</h2>
+    <div class="row">
+      <input id="baseUrl" type="text" placeholder="http://localhost:8080/api/v1" />
+      <input id="bearer" type="text" placeholder="Bearer token (optional in dev mode)" />
+      <button id="saveGlobal">Save</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Load data</h2>
+    <div class="row">
+      <input id="buildingId" type="number" value="1" placeholder="Building ID" />
+      <button id="loadBuildingBtn">Load building</button>
+      <input id="floorId" type="number" value="1" placeholder="Floor ID" />
+      <button id="loadFloorBtn">Load floor directly</button>
+    </div>
+    <div class="row">
+      <select id="floorSelect"></select>
+      <button id="renderSelectedFloorBtn">Render selected floor</button>
+      <button id="fitViewBtn" class="secondary">Fit view</button>
+      <button id="resetViewBtn" class="secondary">Reset zoom/pan</button>
+    </div>
+    <div class="row compact-row">
+      <label><input id="showRooms" type="checkbox" checked /> Rooms</label>
+      <label><input id="showStairs" type="checkbox" checked /> Stairs</label>
+      <label><input id="showNodes" type="checkbox" checked /> Nodes</label>
+      <label><input id="showEdges" type="checkbox" checked /> Node edges</label>
+      <label><input id="showLabels" type="checkbox" checked /> Labels</label>
+    </div>
+  </section>
+
+  <section class="viewer-layout">
+    <div class="card viewer-card">
+      <h2>Map viewer</h2>
+      <p class="small">Mouse wheel - zoom, drag - pan, click object - metadata.</p>
+      <div id="mapViewport" class="map-viewport">
+        <svg id="mapSvg" viewBox="0 0 1000 700" xmlns="http://www.w3.org/2000/svg">
+          <g id="world">
+            <g id="layer-floor"></g>
+            <g id="layer-rooms"></g>
+            <g id="layer-stairs"></g>
+            <g id="layer-edges"></g>
+            <g id="layer-nodes"></g>
+            <g id="layer-labels"></g>
+          </g>
+        </svg>
+      </div>
+      <pre id="viewerStatus">Load a building or floor to start.</pre>
+    </div>
+
+    <div class="side-column">
+      <section class="card">
+        <h2>Selected object</h2>
+        <pre id="selectedInfo">Nothing selected.</pre>
+      </section>
+
+      <section class="card">
+        <h2>Current floor objects</h2>
+        <div id="objectList" class="object-list"></div>
+      </section>
+
+      <section class="card">
+        <h2>Error details</h2>
+        <pre id="errorBox">No errors.</pre>
+      </section>
+    </div>
+  </section>
+</main>
+
+<script src="./common.js"></script>
+<script src="./map.js"></script>
+</body>
+</html>
+

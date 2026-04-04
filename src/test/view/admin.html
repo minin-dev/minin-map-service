@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin API Debug</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+<header>
+  <h1>Admin API Debug</h1>
+  <nav>
+    <a href="./index.html">Home</a>
+    <a href="./map.html">Map endpoints</a>
+    <a href="./auth.html">Auth endpoints</a>
+  </nav>
+</header>
+<main>
+  <section class="card">
+    <h2>Global settings</h2>
+    <div class="row">
+      <input id="baseUrl" type="text" placeholder="http://localhost:8080/api/v1" />
+      <input id="bearer" type="text" placeholder="Bearer token (optional in dev mode)" />
+      <button id="saveGlobal">Save</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>POST /admin/buildings</h2>
+    <textarea id="createBuildingBody">{
+  "name": "Main Building",
+  "coords": "55.0000, 82.0000"
+}</textarea>
+    <div class="row"><button onclick="callCreateBuilding()">Send</button></div>
+    <pre id="createBuildingOut"></pre>
+  </section>
+
+  <section class="card">
+    <h2>PUT /admin/buildings/{id}</h2>
+    <div class="row"><input id="updBuildingId" type="number" placeholder="id" value="1" /></div>
+    <textarea id="updateBuildingBody">{
+  "name": "Main Building Updated",
+  "coords": "55.1000, 82.1000"
+}</textarea>
+    <div class="row"><button onclick="callUpdateBuilding()">Send</button></div>
+    <pre id="updateBuildingOut"></pre>
+  </section>
+
+  <section class="card">
+    <h2>DELETE /admin/buildings/{id}</h2>
+    <div class="row">
+      <input id="delBuildingId" type="number" placeholder="id" value="1" />
+      <button onclick="callDeleteBuilding()">Send</button>
+    </div>
+    <pre id="deleteBuildingOut"></pre>
+  </section>
+
+  <section class="card">
+    <h2>PUT /admin/buildings/{buildingId}/floors/{number}</h2>
+    <div class="row">
+      <input id="updFloorBuildingId" type="number" placeholder="buildingId" value="1" />
+      <input id="updFloorNumber" type="number" placeholder="number" value="1" />
+    </div>
+    <textarea id="updateFloorBody">{
+  "floor": {
+    "number": 1,
+    "name": "Floor 1",
+    "buildingId": 1,
+    "points": [
+      { "x": 0, "y": 0 },
+      { "x": 100, "y": 0 },
+      { "x": 100, "y": 100 }
+    ]
+  },
+  "rooms": [],
+  "stairs": [],
+  "nodes": []
+}</textarea>
+    <div class="row"><button onclick="callUpdateFloor()">Send</button></div>
+    <pre id="updateFloorOut"></pre>
+  </section>
+
+  <section class="card">
+    <h2>POST /admin/buildings/{buildingId}/floors/{number}</h2>
+    <div class="row">
+      <input id="createFloorBuildingId" type="number" placeholder="buildingId" value="1" />
+      <input id="createFloorNumber" type="number" placeholder="number" value="2" />
+    </div>
+    <textarea id="createFloorBody">{
+  "floor": {
+    "number": 2,
+    "name": "Floor 2",
+    "buildingId": 1,
+    "points": [
+      { "x": 0, "y": 0 },
+      { "x": 120, "y": 0 },
+      { "x": 120, "y": 120 }
+    ]
+  },
+  "rooms": [],
+  "stairs": [],
+  "nodes": []
+}</textarea>
+    <div class="row"><button onclick="callCreateFloor()">Send</button></div>
+    <pre id="createFloorOut"></pre>
+  </section>
+
+  <section class="card">
+    <h2>DELETE /admin/buildings/{buildingId}/floors/{number}</h2>
+    <div class="row">
+      <input id="delFloorBuildingId" type="number" placeholder="buildingId" value="1" />
+      <input id="delFloorNumber" type="number" placeholder="number" value="2" />
+      <button onclick="callDeleteFloor()">Send</button>
+    </div>
+    <pre id="deleteFloorOut"></pre>
+  </section>
+
+  <section class="card">
+    <h2>DELETE /admin/reset-db</h2>
+    <div class="row"><button class="secondary" onclick="callResetDb()">Reset DB</button></div>
+    <pre id="resetDbOut"></pre>
+  </section>
+</main>
+
+<script src="./common.js"></script>
+<script>
+  window.DebugApi.setupGlobalControls();
+
+  function callCreateBuilding() {
+    window.DebugApi.sendRequest({
+      method: "POST",
+      path: "/admin/buildings",
+      bodyId: "createBuildingBody",
+      outputId: "createBuildingOut"
+    });
+  }
+
+  function callUpdateBuilding() {
+    const id = document.getElementById("updBuildingId").value;
+    window.DebugApi.sendRequest({
+      method: "PUT",
+      path: `/admin/buildings/${id}`,
+      bodyId: "updateBuildingBody",
+      outputId: "updateBuildingOut"
+    });
+  }
+
+  function callDeleteBuilding() {
+    const id = document.getElementById("delBuildingId").value;
+    window.DebugApi.sendRequest({
+      method: "DELETE",
+      path: `/admin/buildings/${id}`,
+      outputId: "deleteBuildingOut"
+    });
+  }
+
+  function callUpdateFloor() {
+    const buildingId = document.getElementById("updFloorBuildingId").value;
+    const number = document.getElementById("updFloorNumber").value;
+    window.DebugApi.sendRequest({
+      method: "PUT",
+      path: `/admin/buildings/${buildingId}/floors/${number}`,
+      bodyId: "updateFloorBody",
+      outputId: "updateFloorOut"
+    });
+  }
+
+  function callCreateFloor() {
+    const buildingId = document.getElementById("createFloorBuildingId").value;
+    const number = document.getElementById("createFloorNumber").value;
+    window.DebugApi.sendRequest({
+      method: "POST",
+      path: `/admin/buildings/${buildingId}/floors/${number}`,
+      bodyId: "createFloorBody",
+      outputId: "createFloorOut"
+    });
+  }
+
+  function callDeleteFloor() {
+    const buildingId = document.getElementById("delFloorBuildingId").value;
+    const number = document.getElementById("delFloorNumber").value;
+    window.DebugApi.sendRequest({
+      method: "DELETE",
+      path: `/admin/buildings/${buildingId}/floors/${number}`,
+      outputId: "deleteFloorOut"
+    });
+  }
+
+  function callResetDb() {
+    window.DebugApi.sendRequest({
+      method: "DELETE",
+      path: "/admin/reset-db",
+      outputId: "resetDbOut"
+    });
+  }
+</script>
+</body>
+</html>
+

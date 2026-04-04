@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Debug View</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+<header>
+  <h1>Interactive Map Service Debug Pages</h1>
+  <nav>
+    <a href="./admin.html">Admin endpoints</a>
+    <a href="./map.html">Visual map debug</a>
+    <a href="./auth.html">Auth endpoints</a>
+  </nav>
+</header>
+<main>
+  <section class="card">
+    <h2>Global settings</h2>
+    <p class="small">In dev mode auth is usually not required. Keep bearer empty unless you want to test token-only routes.</p>
+    <div class="row">
+      <label style="width:100%;">
+        Base URL (default: http://localhost:8080/api/v1)
+        <input id="baseUrl" type="text" placeholder="http://localhost:8080/api/v1" />
+      </label>
+    </div>
+    <div class="row">
+      <label style="width:100%;">
+        Bearer token (optional)
+        <input id="bearer" type="text" placeholder="eyJ..." />
+      </label>
+    </div>
+    <button id="saveGlobal">Save</button>
+  </section>
+
+  <section class="card">
+    <h2>What is covered</h2>
+    <ul>
+      <li>All endpoints from <code>AdminController</code></li>
+      <li>Visual floor rendering from <code>MapController</code> data (rooms, stairs, nodes)</li>
+      <li>All endpoints from <code>AuthController</code></li>
+    </ul>
+  </section>
+</main>
+
+<script src="./common.js"></script>
+<script>
+  window.DebugApi.setupGlobalControls();
+</script>
+</body>
+</html>
+

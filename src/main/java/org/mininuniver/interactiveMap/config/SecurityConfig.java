@@ -19,10 +19,10 @@
 
 package org.mininuniver.interactiveMap.config;
 
-import org.mininuniver.interactiveMap.security.JwtExceptionHandlerFilter;
-import org.mininuniver.interactiveMap.security.JwtFilter;
-import org.mininuniver.interactiveMap.security.JwtUtil;
-import org.mininuniver.interactiveMap.security.LoginRateLimitFilter;
+import org.mininuniver.interactiveMap.auth.security.JwtExceptionHandlerFilter;
+import org.mininuniver.interactiveMap.auth.security.JwtFilter;
+import org.mininuniver.interactiveMap.auth.security.JwtUtil;
+import org.mininuniver.interactiveMap.auth.security.LoginRateLimitFilter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

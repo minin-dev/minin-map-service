@@ -19,15 +19,15 @@
 
 package org.mininuniver.interactiveMap.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
-import org.mininuniver.interactiveMap.dto.map.*;
-import org.mininuniver.interactiveMap.security.JwtUtil;
-import org.mininuniver.interactiveMap.service.BuildingService;
-import org.mininuniver.interactiveMap.service.FloorService;
-import org.mininuniver.interactiveMap.service.NodeService;
-import org.mininuniver.interactiveMap.service.RoomService;
+import org.mininuniver.interactiveMap.map.controller.MapController;
+import org.mininuniver.interactiveMap.map.dto.*;
+import org.mininuniver.interactiveMap.auth.security.JwtUtil;
+import org.mininuniver.interactiveMap.map.service.BuildingService;
+import org.mininuniver.interactiveMap.map.service.FloorService;
+import org.mininuniver.interactiveMap.map.service.NodeService;
+import org.mininuniver.interactiveMap.map.service.RoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
