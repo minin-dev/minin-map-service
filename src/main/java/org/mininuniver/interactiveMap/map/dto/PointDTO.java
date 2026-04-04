@@ -29,6 +29,8 @@ public class PointDTO {
     @NotNull(message = "Координата Y обязательна")
     private int y;
 
+    public PointDTO() {}
+
     public PointDTO(int x, int y) {
         this.x = x;
         this.y = y;
