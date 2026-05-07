@@ -40,10 +40,20 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The type Global exception handler.
+ */
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    /**
+     * Handle method argument not valid api error.
+     *
+     * @param ex      the ex
+     * @param request the request
+     * @return the api error
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError handleMethodArgumentNotValid(MethodArgumentNotValidException ex, WebRequest request) {
@@ -65,6 +75,13 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
+    /**
+     * Handle constraint violation api error.
+     *
+     * @param ex      the ex
+     * @param request the request
+     * @return the api error
+     */
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError handleConstraintViolation(ConstraintViolationException ex, WebRequest request) {
@@ -86,6 +103,13 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
+    /**
+     * Handle access denied exception api error.
+     *
+     * @param ex      the ex
+     * @param request the request
+     * @return the api error
+     */
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ApiError handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
@@ -99,6 +123,13 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
+    /**
+     * Handle bad credentials exception api error.
+     *
+     * @param ex      the ex
+     * @param request the request
+     * @return the api error
+     */
     @ExceptionHandler(BadCredentialsException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ApiError handleBadCredentialsException(BadCredentialsException ex, WebRequest request) {
@@ -112,6 +143,13 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
+    /**
+     * Handle http message not readable api error.
+     *
+     * @param ex      the ex
+     * @param request the request
+     * @return the api error
+     */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError handleHttpMessageNotReadable(HttpMessageNotReadableException ex, WebRequest request) {
@@ -125,6 +163,13 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
+    /**
+     * Handle no handler found api error.
+     *
+     * @param ex      the ex
+     * @param request the request
+     * @return the api error
+     */
     @ExceptionHandler(NoHandlerFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ApiError handleNoHandlerFound(NoHandlerFoundException ex, WebRequest request) {
@@ -138,6 +183,13 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
+    /**
+     * Handle method argument type mismatch api error.
+     *
+     * @param ex      the ex
+     * @param request the request
+     * @return the api error
+     */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex, WebRequest request) {
@@ -151,6 +203,13 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
+    /**
+     * Handle entity not found exception api error.
+     *
+     * @param ex      the ex
+     * @param request the request
+     * @return the api error
+     */
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ApiError handleEntityNotFoundException(EntityNotFoundException ex, WebRequest request) {
@@ -164,6 +223,13 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
+    /**
+     * Handle optimistic lock exception api error.
+     *
+     * @param ex      the ex
+     * @param request the request
+     * @return the api error
+     */
     @ExceptionHandler(OptimisticLockException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ApiError handleOptimisticLockException(OptimisticLockException ex, WebRequest request) {
@@ -177,6 +243,13 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
+    /**
+     * Handle global exception api error.
+     *
+     * @param ex      the ex
+     * @param request the request
+     * @return the api error
+     */
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ApiError handleGlobalException(Exception ex, WebRequest request) {

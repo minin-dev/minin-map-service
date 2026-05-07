@@ -27,6 +27,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 
+/**
+ * The type Api error.
+ */
 @Data
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)

@@ -31,6 +31,9 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * The type Login rate limit filter.
+ */
 @Component
 public class LoginRateLimitFilter extends OncePerRequestFilter {
 
@@ -72,8 +75,21 @@ public class LoginRateLimitFilter extends OncePerRequestFilter {
     }
 
     private static class Attempt {
+        /**
+         * The Count.
+         */
         int count;
+        /**
+         * The Blocked until.
+         */
         long blockedUntil;
+
+        /**
+         * Instantiates a new Attempt.
+         *
+         * @param count        the count
+         * @param blockedUntil the blocked until
+         */
         Attempt(int count, long blockedUntil) {
             this.count = count;
             this.blockedUntil = blockedUntil;

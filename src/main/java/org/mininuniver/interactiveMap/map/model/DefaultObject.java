@@ -23,6 +23,9 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * The type Default object.
+ */
 @Getter
 @Setter
 @MappedSuperclass

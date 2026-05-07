@@ -46,6 +46,9 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The type Auth controller.
+ */
 @RestController
 @RequestMapping("${api.base.path}/auth")
 @RequiredArgsConstructor
@@ -56,6 +59,12 @@ public class AuthController {
     private final UserDetailsService userDetailsService;
     private final JwtUtil jwtUtil;
 
+    /**
+     * Create authentication token response entity.
+     *
+     * @param request the request
+     * @return the response entity
+     */
     @Operation(summary = "Аутентификация пользователя и получение пары JWT токенов")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешная аутентификация",
@@ -82,6 +91,12 @@ public class AuthController {
         return ResponseEntity.ok(new AuthResponse(accessToken, refreshToken));
     }
 
+    /**
+     * Refresh token response entity.
+     *
+     * @param refreshRequest the refresh request
+     * @return the response entity
+     */
     @Operation(summary = "Обновление токена доступа с использованием refresh токена")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Токен успешно обновлен",
@@ -114,6 +129,12 @@ public class AuthController {
         }
     }
 
+    /**
+     * Logout response entity.
+     *
+     * @param authHeader the auth header
+     * @return the response entity
+     */
     @Operation(summary = "Выход из системы (отзыв JWT токена)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Успешный выход из системы"),
@@ -133,6 +154,11 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Check token response entity.
+     *
+     * @return the response entity
+     */
     @Operation(summary = "Проверка валидности токена")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Токен действителен"),

@@ -31,22 +31,42 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+/**
+ * The type Building service.
+ */
 @Service
 @RequiredArgsConstructor
 public class BuildingService {
     private final BuildingRepository buildingRepository;
     private final BuildingMapper buildingMapper;
 
+    /**
+     * Gets all buildings.
+     *
+     * @return the all buildings
+     */
     public List<BuildingShortDTO> getAllBuildings() {
         return buildingMapper.toShortDtoList(buildingRepository.findAll());
     }
 
+    /**
+     * Gets building by id.
+     *
+     * @param id the id
+     * @return the building by id
+     */
     public BuildingDTO getBuildingById(Long id) {
         return buildingRepository.findById(id)
                 .map(buildingMapper::toDto)
                 .orElseThrow(() -> new EntityNotFoundException("Здание с id " + id + " не найдено"));
     }
 
+    /**
+     * Create building building short dto.
+     *
+     * @param buildingDTO the building dto
+     * @return the building short dto
+     */
     @Transactional
     public BuildingShortDTO createBuilding(BuildingShortDTO buildingDTO) {
         Building building = new Building();
@@ -55,6 +75,13 @@ public class BuildingService {
         return buildingMapper.toShortDto(buildingRepository.save(building));
     }
 
+    /**
+     * Update building building short dto.
+     *
+     * @param id          the id
+     * @param buildingDTO the building dto
+     * @return the building short dto
+     */
     @Transactional
     public BuildingShortDTO updateBuilding(Long id, BuildingShortDTO buildingDTO) {
         Building building = buildingRepository.findById(id)
@@ -64,6 +91,11 @@ public class BuildingService {
         return buildingMapper.toShortDto(buildingRepository.save(building));
     }
 
+    /**
+     * Delete building.
+     *
+     * @param id the id
+     */
     @Transactional
     public void deleteBuilding(Long id) {
         if (!buildingRepository.existsById(id)) {
@@ -72,6 +104,9 @@ public class BuildingService {
         buildingRepository.deleteById(id);
     }
 
+    /**
+     * Delete all.
+     */
     @Transactional
     public void deleteAll() {
         buildingRepository.deleteAll();

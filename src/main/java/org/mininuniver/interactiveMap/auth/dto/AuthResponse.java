@@ -21,6 +21,9 @@ package org.mininuniver.interactiveMap.auth.dto;
 
 import lombok.Data;
 
+/**
+ * The type Auth response.
+ */
 @Data
 public class AuthResponse {
     private final String accessToken;

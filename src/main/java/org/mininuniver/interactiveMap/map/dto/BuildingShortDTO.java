@@ -22,6 +22,9 @@ package org.mininuniver.interactiveMap.map.dto;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
+/**
+ * The type Building short dto.
+ */
 @Data
 public class BuildingShortDTO {
     private Long id;

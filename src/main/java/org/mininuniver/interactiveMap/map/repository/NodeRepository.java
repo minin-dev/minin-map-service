@@ -25,10 +25,24 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * The interface Node repository.
+ */
 @Repository
 public interface NodeRepository extends JpaRepository<GraphNode, Long>{
+    /**
+     * Find by floor id list.
+     *
+     * @param floorId the floor id
+     * @return the list
+     */
     List<GraphNode> findByFloorId(Long floorId);
     List<GraphNode> findAll();
 
+    /**
+     * Delete all by floor id.
+     *
+     * @param floorId the floor id
+     */
     void deleteAllByFloorId(Long floorId);
 }

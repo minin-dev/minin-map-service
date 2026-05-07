@@ -25,6 +25,9 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * The type Floor short dto.
+ */
 @Data
 public class FloorShortDTO {
     private Long id;

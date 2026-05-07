@@ -30,6 +30,9 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The type Building.
+ */
 @Getter
 @Setter
 @Entity

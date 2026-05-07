@@ -27,10 +27,16 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+/**
+ * The interface Building repository.
+ */
 @Repository
 public interface BuildingRepository extends JpaRepository<Building, Long> {
     Optional<Building> findById(Long id);
 
+    /**
+     * Reset sequences.
+     */
     @Modifying
     @Query(value = "DO $$ DECLARE seq RECORD; " +
             "BEGIN " +

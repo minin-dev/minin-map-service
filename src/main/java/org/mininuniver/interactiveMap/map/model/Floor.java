@@ -30,6 +30,9 @@ import org.mininuniver.interactiveMap.map.dto.PointDTO;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The type Floor.
+ */
 @Setter
 @Getter
 @Entity

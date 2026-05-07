@@ -26,15 +26,43 @@ import org.mininuniver.interactiveMap.map.model.GraphNode;
 
 import java.util.List;
 
+/**
+ * The interface Node mapper.
+ */
 @Mapper(componentModel = "spring")
 public interface NodeMapper {
+    /**
+     * To dto node dto.
+     *
+     * @param entity the entity
+     * @return the node dto
+     */
     @Mapping(source = "floor.id", target = "floorId")
     NodeDTO toDto(GraphNode entity);
 
+    /**
+     * To entity graph node.
+     *
+     * @param dto the dto
+     * @return the graph node
+     */
     @Mapping(target = "floor.id", source = "floorId")
     @Mapping(target = "version", ignore = true)
     GraphNode toEntity(NodeDTO dto);
 
+    /**
+     * To dto list list.
+     *
+     * @param entities the entities
+     * @return the list
+     */
     List<NodeDTO> toDtoList(List<GraphNode> entities);
+
+    /**
+     * To entity list list.
+     *
+     * @param dtos the dtos
+     * @return the list
+     */
     List<GraphNode> toEntityList(List<NodeDTO> dtos);
 }

@@ -30,6 +30,9 @@ import org.hibernate.annotations.Type;
 
 import java.util.Map;
 
+/**
+ * The type Graph node.
+ */
 @Setter
 @Getter
 @Entity

@@ -27,14 +27,35 @@ import org.mininuniver.interactiveMap.map.model.Floor;
 
 import java.util.List;
 
+/**
+ * The interface Floor mapper.
+ */
 @Mapper(componentModel = "spring", uses = {RoomMapper.class, NodeMapper.class, StairsMapper.class})
 public interface FloorMapper {
+    /**
+     * To dto floor dto.
+     *
+     * @param entity the entity
+     * @return the floor dto
+     */
     @Mapping(target = "floor", source = ".")
     FloorDTO toDto(Floor entity);
 
+    /**
+     * To short dto floor short dto.
+     *
+     * @param entity the entity
+     * @return the floor short dto
+     */
     @Mapping(source = "building.id", target = "buildingId")
     FloorShortDTO toShortDto(Floor entity);
 
+    /**
+     * To entity floor.
+     *
+     * @param dto the dto
+     * @return the floor
+     */
     @Mapping(target = "id", source = "floor.id")
     @Mapping(target = "number", source = "floor.number")
     @Mapping(target = "name", source = "floor.name")
@@ -43,7 +64,27 @@ public interface FloorMapper {
     @Mapping(target = "version", ignore = true)
     Floor toEntity(FloorDTO dto);
 
+    /**
+     * To dto list list.
+     *
+     * @param entities the entities
+     * @return the list
+     */
     List<FloorDTO> toDtoList(List<Floor> entities);
+
+    /**
+     * To short dto list list.
+     *
+     * @param entities the entities
+     * @return the list
+     */
     List<FloorShortDTO> toShortDtoList(List<Floor> entities);
+
+    /**
+     * To entity list list.
+     *
+     * @param dtos the dtos
+     * @return the list
+     */
     List<Floor> toEntityList(List<FloorDTO> dtos);
 }

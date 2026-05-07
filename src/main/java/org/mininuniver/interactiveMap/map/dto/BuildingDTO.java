@@ -23,6 +23,9 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * The type Building dto.
+ */
 @Data
 public class BuildingDTO {
     private final BuildingShortDTO building;

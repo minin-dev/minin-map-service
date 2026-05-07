@@ -42,6 +42,9 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+/**
+ * The type Security config.
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -55,6 +58,15 @@ public class SecurityConfig {
     @Value("${app.mode:prod}")
     private String appMode;
 
+    /**
+     * Security filter chain security filter chain.
+     *
+     * @param http               the http
+     * @param userDetailsService the user details service
+     * @param jwtUtil            the jwt util
+     * @return the security filter chain
+     * @throws Exception the exception
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, UserDetailsService userDetailsService, JwtUtil jwtUtil) throws Exception {
         if ("dev".equals(appMode)) {
@@ -90,21 +102,45 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * Jwt filter jwt filter.
+     *
+     * @param userDetailsService the user details service
+     * @param jwtUtil            the jwt util
+     * @return the jwt filter
+     */
     @Bean
     public JwtFilter jwtFilter(UserDetailsService userDetailsService, JwtUtil jwtUtil) {
         return new JwtFilter(userDetailsService, jwtUtil);
     }
 
+    /**
+     * Jwt util jwt util.
+     *
+     * @return the jwt util
+     */
     @Bean
     public JwtUtil jwtUtil() {
         return new JwtUtil();
     }
 
+    /**
+     * Authentication manager authentication manager.
+     *
+     * @param config the config
+     * @return the authentication manager
+     * @throws Exception the exception
+     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
+    /**
+     * User details service user details service.
+     *
+     * @return the user details service
+     */
     @Bean
     public UserDetailsService userDetailsService() {
         UserDetails admin = User.builder()
@@ -116,11 +152,21 @@ public class SecurityConfig {
         return new InMemoryUserDetailsManager(admin);
     }
 
+    /**
+     * Login rate limit filter login rate limit filter.
+     *
+     * @return the login rate limit filter
+     */
     @Bean
     public LoginRateLimitFilter loginRateLimitFilter() {
         return new LoginRateLimitFilter();
     }
 
+    /**
+     * Password encoder password encoder.
+     *
+     * @return the password encoder
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

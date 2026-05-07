@@ -26,17 +26,45 @@ import org.mininuniver.interactiveMap.map.model.Room;
 
 import java.util.List;
 
+/**
+ * The interface Room mapper.
+ */
 @Mapper(componentModel = "spring")
 public interface RoomMapper {
+    /**
+     * To dto room dto.
+     *
+     * @param entity the entity
+     * @return the room dto
+     */
     @Mapping(source = "floor.id", target = "floorId")
     @Mapping(source = "node.id", target = "nodeId")
     RoomDTO toDto(Room entity);
 
+    /**
+     * To entity room.
+     *
+     * @param dto the dto
+     * @return the room
+     */
     @Mapping(target = "floor.id", source = "floorId")
     @Mapping(target = "node.id", source = "nodeId")
     @Mapping(target = "version", ignore = true)
     Room toEntity(RoomDTO dto);
 
+    /**
+     * To dto list list.
+     *
+     * @param entities the entities
+     * @return the list
+     */
     List<RoomDTO> toDtoList(List<Room> entities);
+
+    /**
+     * To entity list list.
+     *
+     * @param dtos the dtos
+     * @return the list
+     */
     List<Room> toEntityList(List<RoomDTO> dtos);
 }

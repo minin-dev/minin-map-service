@@ -34,6 +34,9 @@ import org.springframework.web.bind.annotation.*;
 import org.mininuniver.interactiveMap.map.service.FloorService;
 import org.mininuniver.interactiveMap.map.service.BuildingService;
 
+/**
+ * The type Admin controller.
+ */
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("${api.base.path}/admin")
@@ -44,6 +47,12 @@ public class AdminController {
     private final BuildingService buildingService;
     private final DBService dbService;
 
+    /**
+     * Create building building short dto.
+     *
+     * @param buildingDTO the building dto
+     * @return the building short dto
+     */
     @Operation(summary = "Создать новое здание")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Здание успешно создано"),
@@ -54,6 +63,13 @@ public class AdminController {
         return buildingService.createBuilding(buildingDTO);
     }
 
+    /**
+     * Update building building short dto.
+     *
+     * @param id          the id
+     * @param buildingDTO the building dto
+     * @return the building short dto
+     */
     @Operation(summary = "Обновить здание")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Здание успешно обновлено"),
@@ -64,6 +80,12 @@ public class AdminController {
         return buildingService.updateBuilding(id, buildingDTO);
     }
 
+    /**
+     * Delete building response entity.
+     *
+     * @param id the id
+     * @return the response entity
+     */
     @Operation(summary = "Удалить здание")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Здание успешно удалено"),
@@ -75,6 +97,14 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Update floor data floor dto.
+     *
+     * @param buildingId the building id
+     * @param number     the number
+     * @param mapDTO     the map dto
+     * @return the floor dto
+     */
     @Operation(summary = "Изменить/добавить данные этажа по номеру и id здания")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Этаж успешно изменен/добавлен"),
@@ -85,6 +115,14 @@ public class AdminController {
         return floorService.updateFloorData(buildingId, number, mapDTO);
     }
 
+    /**
+     * Create floor floor dto.
+     *
+     * @param buildingId the building id
+     * @param number     the number
+     * @param mapDTO     the map dto
+     * @return the floor dto
+     */
     @Operation(summary = "Создать новый этаж по номеру и id здания")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Этаж успешно создан"),
@@ -95,6 +133,13 @@ public class AdminController {
         return floorService.createFloor(buildingId, number, mapDTO);
     }
 
+    /**
+     * Delete floor response entity.
+     *
+     * @param buildingId the building id
+     * @param number     the number
+     * @return the response entity
+     */
     @Operation(summary = "Удалить этаж по номеру и id здания")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Этаж успешно удален"),
@@ -106,6 +151,11 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
 
+    /**
+     * Reset database response entity.
+     *
+     * @return the response entity
+     */
     @Operation(summary = "Полный сброс базы данных")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "База данных успешно сброшена"),

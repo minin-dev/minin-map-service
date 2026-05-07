@@ -32,6 +32,9 @@ import java.util.stream.Collectors;
 import org.mininuniver.interactiveMap.map.model.Floor;
 import org.mininuniver.interactiveMap.map.model.GraphNode;
 
+/**
+ * The type Node service.
+ */
 @Service
 @RequiredArgsConstructor
 public class NodeService {
@@ -39,22 +42,43 @@ public class NodeService {
     private final NodeMapper nodeMapper;
     private final NodeRepository nodeRepository;
 
+    /**
+     * Delete all by floor id.
+     *
+     * @param floorId the floor id
+     */
     @Transactional
     public void deleteAllByFloorId(Long floorId) {
         nodeRepository.deleteAllByFloorId(floorId);
     }
 
+    /**
+     * Delete all.
+     */
     @Transactional
     public void deleteAll() {
         nodeRepository.deleteAll();
     }
 
+    /**
+     * Gets nodes by floor id.
+     *
+     * @param floorId the floor id
+     * @return the nodes by floor id
+     */
     public List<NodeDTO> getNodesByFloorId(Long floorId) {
         return nodeRepository.findByFloorId(floorId).stream()
                 .map(nodeMapper::toDto)
                 .toList();
     }
 
+    /**
+     * Update nodes for floor map.
+     *
+     * @param floor    the floor
+     * @param nodeDTOs the node dt os
+     * @return the map
+     */
     @Transactional
     public Map<Long, Long> updateNodesForFloor(Floor floor, List<NodeDTO> nodeDTOs) {
         List<GraphNode> existingNodes = nodeRepository.findByFloorId(floor.getId());
@@ -100,6 +124,13 @@ public class NodeService {
         return nodeIdMapping;
     }
 
+    /**
+     * Create nodes for floor map.
+     *
+     * @param floor    the floor
+     * @param nodeDTOs the node dt os
+     * @return the map
+     */
     @Transactional
     public Map<Long, Long> createNodesForFloor(Floor floor, List<NodeDTO> nodeDTOs) {
         Map<Long, Long> nodeIdMapping = new HashMap<>();
@@ -116,12 +147,23 @@ public class NodeService {
         return nodeIdMapping;
     }
 
+    /**
+     * Gets node by id.
+     *
+     * @param id the id
+     * @return the node by id
+     */
     public NodeDTO getNodeById(Long id) {
         return nodeRepository.findById(id)
                 .map(nodeMapper::toDto)
                 .orElseThrow(() -> new EntityNotFoundException("Узел с id " + id + " не найден"));
     }
 
+    /**
+     * Gets all nodes.
+     *
+     * @return the all nodes
+     */
     public List<NodeDTO> getAllNodes() {
         return nodeMapper.toDtoList(nodeRepository.findAll());
     }

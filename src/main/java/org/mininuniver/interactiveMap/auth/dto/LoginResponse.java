@@ -22,6 +22,9 @@ package org.mininuniver.interactiveMap.auth.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+/**
+ * The type Login response.
+ */
 @Getter
 @AllArgsConstructor
 public class LoginResponse {

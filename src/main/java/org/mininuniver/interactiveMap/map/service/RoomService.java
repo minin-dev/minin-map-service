@@ -35,6 +35,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * The type Room service.
+ */
 @Service
 @RequiredArgsConstructor
 public class RoomService {
@@ -43,16 +46,31 @@ public class RoomService {
     private final RoomRepository roomRepository;
     private final NodeRepository nodeRepository;
 
+    /**
+     * Delete all by floor id.
+     *
+     * @param floorId the floor id
+     */
     @Transactional
     public void deleteAllByFloorId(Long floorId) {
         roomRepository.deleteAllByFloorId(floorId);
     }
 
+    /**
+     * Delete all.
+     */
     @Transactional
     public void deleteAll() {
         roomRepository.deleteAll();
     }
 
+    /**
+     * Update rooms for floor.
+     *
+     * @param floor         the floor
+     * @param roomDTOs      the room dt os
+     * @param nodeIdMapping the node id mapping
+     */
     @Transactional
     public void updateRoomsForFloor(Floor floor, List<RoomDTO> roomDTOs, Map<Long, Long> nodeIdMapping) {
         List<Room> existingRooms = roomRepository.findByFloorId(floor.getId());
@@ -91,6 +109,13 @@ public class RoomService {
         roomRepository.deleteAll(existingRoomsMap.values());
     }
 
+    /**
+     * Create rooms for floor.
+     *
+     * @param floor         the floor
+     * @param roomDTOs      the room dt os
+     * @param nodeIdMapping the node id mapping
+     */
     @Transactional
     public void createRoomsForFloor(Floor floor, List<RoomDTO> roomDTOs, Map<Long, Long> nodeIdMapping) {
         for (RoomDTO roomDTO : roomDTOs) {
@@ -110,54 +135,114 @@ public class RoomService {
         }
     }
 
+    /**
+     * Gets rooms by floor id.
+     *
+     * @param floorId the floor id
+     * @return the rooms by floor id
+     */
     public List<RoomDTO> getRoomsByFloorId(Long floorId) {
         return roomRepository.findByFloorId(floorId).stream()
                 .map(roomMapper::toDto)
                 .toList();
     }
 
+    /**
+     * Gets room by floor id and name.
+     *
+     * @param floorId the floor id
+     * @param name    the name
+     * @return the room by floor id and name
+     */
     public RoomDTO getRoomByFloorIdAndName(Long floorId, String name) {
         return roomRepository.findByFloorIdAndName(floorId, name)
                 .map(roomMapper::toDto)
                 .orElseThrow(() -> new EntityNotFoundException("Комната с именем '" + name + "' на этаже с ID " + floorId + " не найдена"));
     }
 
+    /**
+     * Gets room by building id and name.
+     *
+     * @param buildingId the building id
+     * @param name       the name
+     * @return the room by building id and name
+     */
     public RoomDTO getRoomByBuildingIdAndName(Long buildingId, String name) {
         return roomRepository.findByFloor_Building_IdAndName(buildingId, name)
                 .map(roomMapper::toDto)
                 .orElseThrow(() -> new EntityNotFoundException("Комната с именем '" + name + "' не найдена в здании"));
     }
 
+    /**
+     * Gets room by building id and floor number and name.
+     *
+     * @param buildingId  the building id
+     * @param floorNumber the floor number
+     * @param name        the name
+     * @return the room by building id and floor number and name
+     */
     public RoomDTO getRoomByBuildingIdAndFloorNumberAndName(Long buildingId, int floorNumber, String name) {
         return roomRepository.findByFloor_Building_IdAndFloor_NumberAndName(buildingId, floorNumber, name)
                 .map(roomMapper::toDto)
                 .orElseThrow(() -> new EntityNotFoundException("Комната с именем '" + name + "' не найдена на этаже " + floorNumber + " в здании " + buildingId));
     }
 
+    /**
+     * Gets room by id.
+     *
+     * @param id the id
+     * @return the room by id
+     */
     public RoomDTO getRoomById(Long id) {
         return roomRepository.findById(id)
                 .map(roomMapper::toDto)
                 .orElseThrow(() -> new EntityNotFoundException("Комната с id " + id + " не найдена"));
     }
 
+    /**
+     * Gets all rooms.
+     *
+     * @return the all rooms
+     */
     public List<RoomDTO> getAllRooms() {
         return roomRepository.findAll().stream()
                 .map(roomMapper::toDto)
                 .toList();
     }
 
+    /**
+     * Gets all rooms by building id.
+     *
+     * @param buildingId the building id
+     * @return the all rooms by building id
+     */
     public List<RoomDTO> getAllRoomsByBuildingId(Long buildingId) {
         return roomRepository.findByFloor_Building_Id(buildingId).stream()
                 .map(roomMapper::toDto)
                 .toList();
     }
 
+    /**
+     * Gets all rooms by building id and floor number.
+     *
+     * @param buildingId  the building id
+     * @param floorNumber the floor number
+     * @return the all rooms by building id and floor number
+     */
     public List<RoomDTO> getAllRoomsByBuildingIdAndFloorNumber(Long buildingId, int floorNumber) {
         return roomRepository.findByFloor_Building_IdAndFloor_Number(buildingId, floorNumber).stream()
                 .map(roomMapper::toDto)
                 .toList();
     }
 
+    /**
+     * Search rooms list.
+     *
+     * @param buildingId the building id
+     * @param floor      the floor
+     * @param name       the name
+     * @return the list
+     */
     public List<RoomDTO> searchRooms(Long buildingId, Integer floor, String name) {
         if (buildingId != null && floor != null && name != null) {
             return roomRepository.findByFloor_Building_IdAndFloor_NumberAndName(buildingId, floor, name)

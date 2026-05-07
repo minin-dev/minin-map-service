@@ -39,6 +39,9 @@ import org.springframework.validation.annotation.Validated;
 
 import java.util.*;
 
+/**
+ * The type Floor service.
+ */
 @Service
 @RequiredArgsConstructor
 @Validated
@@ -53,6 +56,11 @@ public class FloorService {
     private final FloorRepository floorRepository;
     private final BuildingRepository buildingRepository;
 
+    /**
+     * Gets all floors.
+     *
+     * @return the all floors
+     */
     public List<FloorShortDTO> getAllFloors() {
         List<Floor> floors = floorRepository.findAll();
         return floors.stream()
@@ -61,6 +69,12 @@ public class FloorService {
                 .toList();
     }
 
+    /**
+     * Search floors list.
+     *
+     * @param buildingId the building id
+     * @return the list
+     */
     public List<FloorShortDTO> searchFloors(Long buildingId) {
         if (buildingId != null) {
             return getFloorsByBuildingId(buildingId);
@@ -68,6 +82,12 @@ public class FloorService {
         return getAllFloors();
     }
 
+    /**
+     * Gets floors by building id.
+     *
+     * @param buildingId the building id
+     * @return the floors by building id
+     */
     public List<FloorShortDTO> getFloorsByBuildingId(Long buildingId) {
         Building building = buildingRepository.findById(buildingId)
                 .orElseThrow(() -> new EntityNotFoundException("Здание с id " + buildingId + " не найдено"));
@@ -78,6 +98,12 @@ public class FloorService {
                 .toList();
     }
 
+    /**
+     * Gets floor by id.
+     *
+     * @param id the id
+     * @return the floor by id
+     */
     public FloorDTO getFloorById(Long id) {
         Floor floorEntity = floorRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Здание с id " + id + " не найдено"));
@@ -90,6 +116,13 @@ public class FloorService {
         return new FloorDTO(floor, rooms, stairs, nodes);
     }
 
+    /**
+     * Gets floor data by building id and number.
+     *
+     * @param buildingId the building id
+     * @param number     the number
+     * @return the floor data by building id and number
+     */
     public FloorDTO getFloorDataByBuildingIdAndNumber(Long buildingId, int number) {
         Floor floorEntity = floorRepository.findByBuildingIdAndNumber(buildingId, number)
                 .orElseThrow(() -> new EntityNotFoundException("Этаж не найден"));
@@ -102,6 +135,14 @@ public class FloorService {
         return new FloorDTO(floor, rooms, stairs, nodes);
     }
 
+    /**
+     * Update floor data floor dto.
+     *
+     * @param buildingId the building id
+     * @param number     the number
+     * @param mapDTO     the map dto
+     * @return the floor dto
+     */
     @Transactional
     public FloorDTO updateFloorData(Long buildingId, int number, @Valid FloorDTO mapDTO) {
         Floor floor = floorRepository.findByBuildingIdAndNumber(buildingId, number)
@@ -118,6 +159,14 @@ public class FloorService {
         return getFloorDataByBuildingIdAndNumber(buildingId, number);
     }
 
+    /**
+     * Create floor floor dto.
+     *
+     * @param buildingId the building id
+     * @param number     the number
+     * @param mapDTO     the map dto
+     * @return the floor dto
+     */
     @Transactional
     public FloorDTO createFloor(Long buildingId, int number, @Valid FloorDTO mapDTO) {
         if (floorRepository.existsByBuildingIdAndNumber(buildingId, number))
@@ -140,6 +189,12 @@ public class FloorService {
         return getFloorDataByBuildingIdAndNumber(buildingId, number);
     }
 
+    /**
+     * Delete floor.
+     *
+     * @param buildingId the building id
+     * @param number     the number
+     */
     @Transactional
     public void deleteFloor(Long buildingId, int number) {
         Floor floor = floorRepository.findByBuildingIdAndNumber(buildingId, number)
@@ -155,6 +210,9 @@ public class FloorService {
         }
     }
 
+    /**
+     * Delete all.
+     */
     @Transactional
     public void deleteAll() {
         floorRepository.deleteAll();

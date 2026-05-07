@@ -22,9 +22,17 @@ package org.mininuniver.interactiveMap;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * The type Interactive map application.
+ */
 @SpringBootApplication
 public class InteractiveMapApplication {
 
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     */
     public static void main(String[] args) {
         SpringApplication.run(InteractiveMapApplication.class, args);
 

@@ -4,6 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * The type Db service.
+ */
 @Service
 @RequiredArgsConstructor
 public class DBService {
@@ -14,6 +17,9 @@ public class DBService {
     private final BuildingService buildingService;
     private final FloorService floorService;
 
+    /**
+     * Reset database.
+     */
     @Transactional
     public void resetDatabase() {
         try {

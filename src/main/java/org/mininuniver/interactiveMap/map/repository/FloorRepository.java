@@ -27,17 +27,49 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+/**
+ * The interface Floor repository.
+ */
 @Repository
 public interface FloorRepository extends JpaRepository<Floor, Long> {
 
+    /**
+     * Find by number optional.
+     *
+     * @param number the number
+     * @return the optional
+     */
     Optional<Floor> findByNumber(int number);
 
+    /**
+     * Find by building id and number optional.
+     *
+     * @param buildingId the building id
+     * @param number     the number
+     * @return the optional
+     */
     Optional<Floor> findByBuildingIdAndNumber(Long buildingId, int number);
 
+    /**
+     * Exists by number boolean.
+     *
+     * @param number the number
+     * @return the boolean
+     */
     boolean existsByNumber(int number);
 
+    /**
+     * Exists by building id and number boolean.
+     *
+     * @param buildingId the building id
+     * @param number     the number
+     * @return the boolean
+     */
     boolean existsByBuildingIdAndNumber(Long buildingId, int number);
 
+    /**
+     * Reset sequences.
+     */
     @Modifying
     @Query(value = "DO $$ DECLARE seq RECORD; " +
             "BEGIN " +

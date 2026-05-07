@@ -22,6 +22,9 @@ package org.mininuniver.interactiveMap.map.dto;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+/**
+ * The type Point dto.
+ */
 @Data
 public class PointDTO {
     @NotNull(message = "Координата X обязательна")
@@ -29,8 +32,17 @@ public class PointDTO {
     @NotNull(message = "Координата Y обязательна")
     private int y;
 
+    /**
+     * Instantiates a new Point dto.
+     */
     public PointDTO() {}
 
+    /**
+     * Instantiates a new Point dto.
+     *
+     * @param x the x
+     * @param y the y
+     */
     public PointDTO(int x, int y) {
         this.x = x;
         this.y = y;

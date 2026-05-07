@@ -35,6 +35,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * The type Stairs service.
+ */
 @Service
 @RequiredArgsConstructor
 public class StairsService {
@@ -43,22 +46,43 @@ public class StairsService {
     private final StairsMapper stairsMapper;
     private final NodeRepository nodeRepository;
 
+    /**
+     * Gets stairs by floor id.
+     *
+     * @param floorId the floor id
+     * @return the stairs by floor id
+     */
     public List<StairsDTO> getStairsByFloorId(Long floorId) {
         return stairsRepository.findByFloorId(floorId).stream()
                 .map(stairsMapper::toDto)
                 .toList();
     }
 
+    /**
+     * Delete all by floor id.
+     *
+     * @param floorId the floor id
+     */
     @Transactional
     public void deleteAllByFloorId(Long floorId) {
         stairsRepository.deleteAllByFloorId(floorId);
     }
 
+    /**
+     * Delete all.
+     */
     @Transactional
     public void deleteAll() {
         stairsRepository.deleteAll();
     }
 
+    /**
+     * Update stairs for floor.
+     *
+     * @param floor         the floor
+     * @param stairsDTOs    the stairs dt os
+     * @param nodeIdMapping the node id mapping
+     */
     @Transactional
     public void updateStairsForFloor(Floor floor, List<StairsDTO> stairsDTOs, Map<Long, Long> nodeIdMapping) {
         List<Stairs> existingStairs = stairsRepository.findByFloorId(floor.getId());
@@ -91,6 +115,13 @@ public class StairsService {
         stairsRepository.deleteAll(existingStairsMap.values());
     }
 
+    /**
+     * Create stairs for floor.
+     *
+     * @param floor         the floor
+     * @param stairsDTOs    the stairs dt os
+     * @param nodeIdMapping the node id mapping
+     */
     @Transactional
     public void createStairsForFloor(Floor floor, List<StairsDTO> stairsDTOs, Map<Long, Long> nodeIdMapping) {
         for (StairsDTO stairsDTO : stairsDTOs) {

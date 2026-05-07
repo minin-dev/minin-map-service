@@ -25,6 +25,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.util.List;
 
+/**
+ * The type Room dto.
+ */
 @Data
 public class RoomDTO {
     private Long id;

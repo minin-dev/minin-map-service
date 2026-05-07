@@ -38,6 +38,9 @@ import io.jsonwebtoken.security.SignatureException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 
+/**
+ * The type Jwt exception handler filter.
+ */
 public class JwtExceptionHandlerFilter extends OncePerRequestFilter {
 
     private final ObjectMapper objectMapper = new ObjectMapper();

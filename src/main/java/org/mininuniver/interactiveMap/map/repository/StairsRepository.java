@@ -25,9 +25,23 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+/**
+ * The interface Stairs repository.
+ */
 @Repository
 public interface StairsRepository extends JpaRepository<Stairs, Long>{
+    /**
+     * Find by floor id list.
+     *
+     * @param floorId the floor id
+     * @return the list
+     */
     List<Stairs> findByFloorId(Long floorId);
 
+    /**
+     * Delete all by floor id.
+     *
+     * @param floorId the floor id
+     */
     void deleteAllByFloorId(Long floorId);
 }

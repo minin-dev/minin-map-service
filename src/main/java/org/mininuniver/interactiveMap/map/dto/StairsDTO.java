@@ -25,6 +25,9 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * The type Stairs dto.
+ */
 @Data
 public class StairsDTO {
     private Long id;

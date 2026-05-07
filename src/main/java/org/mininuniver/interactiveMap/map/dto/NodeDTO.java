@@ -24,6 +24,9 @@ import lombok.Data;
 
 import java.util.Map;
 
+/**
+ * The type Node dto.
+ */
 @Data
 public class NodeDTO {
     private Long id;

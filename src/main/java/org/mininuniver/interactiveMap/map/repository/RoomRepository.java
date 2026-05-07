@@ -26,15 +26,84 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * The interface Room repository.
+ */
 @Repository
 public interface RoomRepository extends JpaRepository<Room, Long> {
+    /**
+     * Find by floor building id and name optional.
+     *
+     * @param buildingId the building id
+     * @param name       the name
+     * @return the optional
+     */
     Optional<Room> findByFloor_Building_IdAndName(Long buildingId, String name);
+
+    /**
+     * Find by floor id and name optional.
+     *
+     * @param floorId the floor id
+     * @param name    the name
+     * @return the optional
+     */
     Optional<Room> findByFloorIdAndName(Long floorId, String name);
+
+    /**
+     * Find by floor building id and floor number and name optional.
+     *
+     * @param buildingId  the building id
+     * @param floorNumber the floor number
+     * @param name        the name
+     * @return the optional
+     */
     Optional<Room> findByFloor_Building_IdAndFloor_NumberAndName(Long buildingId, int floorNumber, String name);
+
+    /**
+     * Find by name optional.
+     *
+     * @param name the name
+     * @return the optional
+     */
     Optional<Room> findByName(String name);
+
+    /**
+     * Find by floor id list.
+     *
+     * @param floorId the floor id
+     * @return the list
+     */
     List<Room> findByFloorId(Long floorId);
+
+    /**
+     * Find all by floor id list.
+     *
+     * @param floorId the floor id
+     * @return the list
+     */
     List<Room> findAllByFloorId(Long floorId);
+
+    /**
+     * Find by floor building id list.
+     *
+     * @param buildingId the building id
+     * @return the list
+     */
     List<Room> findByFloor_Building_Id(Long buildingId);
+
+    /**
+     * Find by floor building id and floor number list.
+     *
+     * @param buildingId  the building id
+     * @param floorNumber the floor number
+     * @return the list
+     */
     List<Room> findByFloor_Building_IdAndFloor_Number(Long buildingId, int floorNumber);
+
+    /**
+     * Delete all by floor id.
+     *
+     * @param floorId the floor id
+     */
     void deleteAllByFloorId(Long floorId);
 }

@@ -27,14 +27,35 @@ import org.mininuniver.interactiveMap.map.model.Building;
 
 import java.util.List;
 
+/**
+ * The interface Building mapper.
+ */
 @Mapper(componentModel = "spring", uses = {FloorMapper.class})
 public interface BuildingMapper {
 
+    /**
+     * To dto building dto.
+     *
+     * @param entity the entity
+     * @return the building dto
+     */
     @Mapping(target = "building", source = ".")
     BuildingDTO toDto(Building entity);
 
+    /**
+     * To short dto building short dto.
+     *
+     * @param entity the entity
+     * @return the building short dto
+     */
     BuildingShortDTO toShortDto(Building entity);
 
+    /**
+     * To entity building.
+     *
+     * @param dto the dto
+     * @return the building
+     */
     @Mapping(target = "id", source = "building.id")
     @Mapping(target = "name", source = "building.name")
     @Mapping(target = "coords", source = "building.coords")
@@ -42,7 +63,27 @@ public interface BuildingMapper {
     @Mapping(target = "version", ignore = true)
     Building toEntity(BuildingDTO dto);
 
+    /**
+     * To dto list list.
+     *
+     * @param entities the entities
+     * @return the list
+     */
     List<BuildingDTO> toDtoList(List<Building> entities);
+
+    /**
+     * To short dto list list.
+     *
+     * @param entities the entities
+     * @return the list
+     */
     List<BuildingShortDTO> toShortDtoList(List<Building> entities);
+
+    /**
+     * To entity list list.
+     *
+     * @param dtos the dtos
+     * @return the list
+     */
     List<Building> toEntityList(List<BuildingDTO> dtos);
 }

@@ -34,6 +34,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * The type Jwt util.
+ */
 @Component
 public class JwtUtil {
 
@@ -53,6 +56,12 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
+    /**
+     * Generate token string.
+     *
+     * @param userDetails the user details
+     * @return the string
+     */
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("roles", userDetails.getAuthorities().stream()
@@ -61,7 +70,13 @@ public class JwtUtil {
                 
         return createToken(claims, userDetails.getUsername(), expiration);
     }
-    
+
+    /**
+     * Generate refresh token string.
+     *
+     * @param userDetails the user details
+     * @return the string
+     */
     public String generateRefreshToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("type", "refresh");
@@ -78,6 +93,13 @@ public class JwtUtil {
                 .compact();
     }
 
+    /**
+     * Validate token boolean.
+     *
+     * @param token       the token
+     * @param userDetails the user details
+     * @return the boolean
+     */
     public boolean validateToken(String token, UserDetails userDetails) {
         if (isTokenBlacklisted(token)) {
             return false;
@@ -86,16 +108,34 @@ public class JwtUtil {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
-    
+
+    /**
+     * Extract username string.
+     *
+     * @param token the token
+     * @return the string
+     */
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
-    
+
+    /**
+     * Extract roles list.
+     *
+     * @param token the token
+     * @return the list
+     */
     public List<String> extractRoles(String token) {
         Claims claims = extractAllClaims(token);
         return claims.get("roles", List.class);
     }
-    
+
+    /**
+     * Is refresh token boolean.
+     *
+     * @param token the token
+     * @return the boolean
+     */
     public boolean isRefreshToken(String token) {
         Claims claims = extractAllClaims(token);
         return "refresh".equals(claims.get("type"));
@@ -122,12 +162,23 @@ public class JwtUtil {
         return extractExpiration(token).before(new Date());
     }
 
+    /**
+     * Blacklist token.
+     *
+     * @param token the token
+     */
     public void blacklistToken(String token) {
         Date expiration = extractExpiration(token);
         blacklistedTokens.put(token, expiration);
         cleanupBlacklistedTokens();
     }
-    
+
+    /**
+     * Is token blacklisted boolean.
+     *
+     * @param token the token
+     * @return the boolean
+     */
     public boolean isTokenBlacklisted(String token) {
         return blacklistedTokens.containsKey(token);
     }

@@ -12,6 +12,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+/**
+ * The type Data seeder.
+ */
 @Component
 @Slf4j
 @RequiredArgsConstructor

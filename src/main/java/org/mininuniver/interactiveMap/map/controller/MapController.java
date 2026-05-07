@@ -40,6 +40,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * The type Map controller.
+ */
 @RestController
 @RequestMapping("${api.base.path}/map")
 @RequiredArgsConstructor
@@ -53,6 +56,11 @@ public class MapController {
 
     // --- Building Endpoints ---
 
+    /**
+     * Search buildings list.
+     *
+     * @return the list
+     */
     @Operation(summary = "Получить все здания (поиск)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Здания найдены",
@@ -65,6 +73,12 @@ public class MapController {
         return buildingService.getAllBuildings();
     }
 
+    /**
+     * Gets building by id.
+     *
+     * @param id the id
+     * @return the building by id
+     */
     @Operation(summary = "Получить здание по id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Здание найдено",
@@ -80,6 +94,12 @@ public class MapController {
 
     // --- Floor Endpoints ---
 
+    /**
+     * Search floors list.
+     *
+     * @param buildingId the building id
+     * @return the list
+     */
     @Operation(summary = "Поиск этажей")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Этажи найдены",
@@ -92,6 +112,12 @@ public class MapController {
         return floorService.searchFloors(buildingId);
     }
 
+    /**
+     * Gets floor by id.
+     *
+     * @param id the id
+     * @return the floor by id
+     */
     @Operation(summary = "Получить данные этажа по id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Этаж найден",
@@ -107,6 +133,14 @@ public class MapController {
 
     // --- Room Endpoints ---
 
+    /**
+     * Search rooms list.
+     *
+     * @param buildingId the building id
+     * @param floor      the floor
+     * @param name       the name
+     * @return the list
+     */
     @Operation(summary = "Поиск комнат")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Комнаты найдены",
@@ -121,6 +155,12 @@ public class MapController {
         return roomService.searchRooms(buildingId, floor, name);
     }
 
+    /**
+     * Gets room by id.
+     *
+     * @param id the id
+     * @return the room by id
+     */
     @Operation(summary = "Получить комнату по id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Комната найдена",
@@ -136,6 +176,11 @@ public class MapController {
 
     // --- Node Endpoints ---
 
+    /**
+     * Search nodes list.
+     *
+     * @return the list
+     */
     @Operation(summary = "Получить все узлы (поиск)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Узлы найдены",
@@ -148,6 +193,12 @@ public class MapController {
         return nodeService.getAllNodes();
     }
 
+    /**
+     * Gets node by id.
+     *
+     * @param id the id
+     * @return the node by id
+     */
     @Operation(summary = "Получить узел по id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Узел найден",
