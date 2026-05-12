@@ -25,17 +25,16 @@ import org.mininuniver.interactiveMap.map.dto.PointDTO;
 import org.mininuniver.interactiveMap.map.dto.StairsDTO;
 import org.mininuniver.interactiveMap.map.mapper.StairsMapper;
 import org.mininuniver.interactiveMap.map.model.Floor;
+import org.mininuniver.interactiveMap.map.model.GraphNode;
 import org.mininuniver.interactiveMap.map.model.Stairs;
+import org.mininuniver.interactiveMap.map.repository.NodeRepository;
 import org.mininuniver.interactiveMap.map.repository.StairsRepository;
 import org.mininuniver.interactiveMap.map.service.StairsService;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Arrays;
+import java.util.*;
 
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -55,6 +54,9 @@ class StairsServiceTest {
 
     @Mock
     private StairsMapper stairsMapper;
+
+    @Mock
+    private NodeRepository nodeRepository;
 
     @InjectMocks
     private StairsService stairsService;
@@ -104,6 +106,10 @@ class StairsServiceTest {
         stairsDTO.setStairs(stairsArray);
         stairsDTO.setNodeId(100L);
         Map<Long, Long> nodeIdMapping = Map.of(100L, 200L);
+
+        GraphNode expectedNode = new GraphNode();
+        expectedNode.setId(200L);
+        when(nodeRepository.findById(200L)).thenReturn(Optional.of(expectedNode));
 
         stairsService.createStairsForFloor(floor, List.of(stairsDTO), nodeIdMapping);
 
