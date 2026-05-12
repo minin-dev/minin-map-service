@@ -47,7 +47,7 @@ public interface FloorMapper {
      * @param entity the entity
      * @return the floor short dto
      */
-    @Mapping(source = "building.id", target = "buildingId")
+    @Mapping(target = "buildingId", source = "building.id")
     FloorShortDTO toShortDto(Floor entity);
 
     /**
@@ -56,16 +56,14 @@ public interface FloorMapper {
      * @param dto the dto
      * @return the floor
      */
-    @Mapping(target = "id", source = "floor.id")
-    @Mapping(target = "number", source = "floor.number")
-    @Mapping(target = "name", source = "floor.name")
-    @Mapping(target = "building.id", source = "floor.buildingId")
-    @Mapping(target = "points", source = "floor.points")
+    @Mapping(target = ".", source = "floor")
     @Mapping(target = "version", ignore = true)
+    @Mapping(target = "building", ignore = true)
+    // todo: чую тут что то нечисто, надо будет потом переделать, но пока так
     Floor toEntity(FloorDTO dto);
 
     /**
-     * To dto list list.
+     * To dto list.
      *
      * @param entities the entities
      * @return the list
@@ -73,7 +71,7 @@ public interface FloorMapper {
     List<FloorDTO> toDtoList(List<Floor> entities);
 
     /**
-     * To short dto list list.
+     * To short dto list.
      *
      * @param entities the entities
      * @return the list
@@ -81,7 +79,7 @@ public interface FloorMapper {
     List<FloorShortDTO> toShortDtoList(List<Floor> entities);
 
     /**
-     * To entity list list.
+     * To entity list.
      *
      * @param dtos the dtos
      * @return the list
